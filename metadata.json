@@ -1,0 +1,9 @@
+{
+  "name": "OUROZ",
+  "description": "The Amazigh Source: A high-fashion, high-tech trade bridge between Moroccan heritage and GCC markets, featuring AI-powered verification and cinematic visual tools.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
