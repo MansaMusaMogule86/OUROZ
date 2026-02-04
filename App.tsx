@@ -14,6 +14,16 @@ import Assistant from './components/AI/Assistant';
 import CategoryPage from './components/Categories/CategoryPage';
 import ChefAtelier from './components/ChefAtelier';
 
+// B2B Marketplace Pages
+import BuyerMarketplace from './src/pages/BuyerMarketplace';
+import SupplierDashboard from './src/pages/SupplierDashboard';
+import SupplierProfile from './src/pages/SupplierProfile';
+import ProductDetail from './src/pages/ProductDetail';
+import RFQSystem from './src/pages/RFQSystem';
+import MessagingSystem from './src/pages/MessagingSystem';
+import OrderManagement from './src/pages/OrderManagement';
+import Checkout from './src/pages/Checkout';
+
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<ViewType>('LANDING');
   const [tradeMode, setTradeMode] = useState<'RETAIL' | 'WHOLESALE'>('RETAIL');
@@ -23,7 +33,7 @@ const App: React.FC = () => {
     role: UserRole.GUEST,
     status: ApplicationStatus.NONE
   });
-  
+
   const [isVoiceOpen, setIsVoiceOpen] = useState(false);
   const [wishlist, setWishlist] = useState<Product[]>(() => {
     const saved = localStorage.getItem('ouroz_amud_vault');
@@ -75,15 +85,15 @@ const App: React.FC = () => {
       case 'CHEF_ADAFER':
         return <ChefAtelier onBack={() => setCurrentView('SHOP')} wishlist={wishlist} onToggleVault={toggleAmudVault} />;
       case 'CAT_KITCHEN':
-        return <CategoryPage categoryName="Artisan Kitchen" categorySlug="kitchen-accessories" onBack={() => setCurrentView('SHOP')} onAddToCart={() => {}} />;
+        return <CategoryPage categoryName="Artisan Kitchen" categorySlug="kitchen-accessories" onBack={() => setCurrentView('SHOP')} onAddToCart={() => { }} />;
       case 'CAT_CLOTHING':
-        return <CategoryPage categoryName="Heritage Clothing" categorySlug="clothing" onBack={() => setCurrentView('SHOP')} onAddToCart={() => {}} />;
+        return <CategoryPage categoryName="Heritage Clothing" categorySlug="clothing" onBack={() => setCurrentView('SHOP')} onAddToCart={() => { }} />;
       case 'CAT_ACCESSORIES':
-        return <CategoryPage categoryName="Jewelry & Metalwork" categorySlug="accessories" onBack={() => setCurrentView('SHOP')} onAddToCart={() => {}} />;
+        return <CategoryPage categoryName="Jewelry & Metalwork" categorySlug="accessories" onBack={() => setCurrentView('SHOP')} onAddToCart={() => { }} />;
       case 'CAT_SKINCARE':
-        return <CategoryPage categoryName="Botanical Care" categorySlug="skin-care" onBack={() => setCurrentView('SHOP')} onAddToCart={() => {}} />;
+        return <CategoryPage categoryName="Botanical Care" categorySlug="skin-care" onBack={() => setCurrentView('SHOP')} onAddToCart={() => { }} />;
       case 'CAT_GROCERIES':
-        return <CategoryPage categoryName="Curated Pantry" categorySlug="groceries" onBack={() => setCurrentView('SHOP')} onAddToCart={() => {}} />;
+        return <CategoryPage categoryName="Curated Pantry" categorySlug="groceries" onBack={() => setCurrentView('SHOP')} onAddToCart={() => { }} />;
       case 'TRADE_GATE':
         return <WholesaleGate onApplyBuyer={() => setCurrentView('APPLY_BUYER')} onApplySupplier={() => setCurrentView('APPLY_SUPPLIER')} onLoginAsAdmin={() => {
           setUser({ id: 'admin_1', name: 'Grand Curator', role: UserRole.ADMIN, status: ApplicationStatus.APPROVED });
@@ -97,6 +107,38 @@ const App: React.FC = () => {
         return <AIStudio />;
       case 'AMUD_ENGINE':
         return <Assistant isChef={false} wishlist={wishlist} onToggleVault={toggleAmudVault} />;
+
+      // B2B Marketplace Views
+      case 'B2B_MARKETPLACE':
+        return <BuyerMarketplace language="en" onNavigate={(path) => {
+          if (path.startsWith('/supplier/')) setCurrentView('B2B_SUPPLIER_PROFILE');
+          else if (path.startsWith('/product/')) setCurrentView('B2B_PRODUCT_DETAIL');
+        }} />;
+      case 'B2B_SUPPLIER_DASHBOARD':
+        return <SupplierDashboard language="en" supplierId="demo" onNavigate={(path) => setCurrentView('B2B_MARKETPLACE')} />;
+      case 'B2B_SUPPLIER_PROFILE':
+        return <SupplierProfile supplierId="demo" language="en" onNavigate={(path) => {
+          if (path === '/marketplace') setCurrentView('B2B_MARKETPLACE');
+          else if (path.startsWith('/product/')) setCurrentView('B2B_PRODUCT_DETAIL');
+        }} />;
+      case 'B2B_PRODUCT_DETAIL':
+        return <ProductDetail productSlug="demo-product" language="en" onNavigate={(path) => {
+          if (path === '/marketplace') setCurrentView('B2B_MARKETPLACE');
+          else if (path === '/checkout') setCurrentView('B2B_CHECKOUT');
+          else if (path.startsWith('/supplier/')) setCurrentView('B2B_SUPPLIER_PROFILE');
+        }} />;
+      case 'B2B_RFQ':
+        return <RFQSystem language="en" userId="demo" userType="buyer" onNavigate={(path) => setCurrentView('B2B_MARKETPLACE')} />;
+      case 'B2B_MESSAGES':
+        return <MessagingSystem language="en" userId="demo" userType="buyer" onNavigate={(path) => setCurrentView('B2B_MARKETPLACE')} />;
+      case 'B2B_ORDERS':
+        return <OrderManagement language="en" userId="demo" userType="buyer" onNavigate={(path) => setCurrentView('B2B_MARKETPLACE')} />;
+      case 'B2B_CHECKOUT':
+        return <Checkout language="en" userId="demo" onNavigate={(path) => {
+          if (path === '/orders') setCurrentView('B2B_ORDERS');
+          else if (path === '/marketplace') setCurrentView('B2B_MARKETPLACE');
+        }} />;
+
       default:
         return <LandingPage onShop={() => handleModeToggle('RETAIL')} onTrade={() => handleModeToggle('WHOLESALE')} />;
     }
@@ -104,15 +146,15 @@ const App: React.FC = () => {
 
   return (
     <div className={`min-h-screen bg-sahara flex flex-col font-sans transition-all duration-1000 overflow-x-hidden ${tradeMode === 'WHOLESALE' ? 'selection:bg-gold/30' : 'selection:bg-indigo/30'}`}>
-      <Navigation 
+      <Navigation
         user={user}
         currentView={currentView}
         tradeMode={tradeMode}
         onModeToggle={handleModeToggle}
         setView={setCurrentView}
-        wishlistCount={wishlist.length} 
+        wishlistCount={wishlist.length}
       />
-      
+
       <main className="container mx-auto px-6 py-12 max-w-7xl flex-1 animate-fade-in relative">
         {renderContent()}
       </main>
@@ -120,7 +162,7 @@ const App: React.FC = () => {
       {/* AMUD Vault Icon (Floating Cart Proxy) */}
       <div className="fixed bottom-12 right-12 z-[100] flex flex-col items-end gap-6 pointer-events-none">
         <div className="flex flex-col items-center gap-4 pointer-events-auto">
-          <button 
+          <button
             onClick={() => setCurrentView('AMUD_ENGINE')}
             className={`w-20 h-20 rounded-full shadow-amud amud-vault flex items-center justify-center hover:scale-110 transition-all active:scale-95 group relative overflow-hidden bg-white/10 backdrop-blur-3xl border border-gold/40`}
           >
@@ -137,7 +179,7 @@ const App: React.FC = () => {
       </div>
 
       {isVoiceOpen && <VoiceSupport onClose={() => setIsVoiceOpen(false)} />}
-      
+
       {/* Particle Fly Portal */}
       {lastAddedId && (
         <div className="fixed inset-0 pointer-events-none z-[200]">

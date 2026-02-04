@@ -88,22 +88,31 @@ export interface AIMessage {
   isThinking?: boolean;
 }
 
-export type ViewType = 
-  | 'LANDING' 
-  | 'SHOP' 
-  | 'TRADE_GATE' 
-  | 'APPLY_BUYER' 
-  | 'APPLY_SUPPLIER' 
-  | 'TRADE_DASHBOARD' 
-  | 'ADMIN' 
-  | 'AI_STUDIO' 
+export type ViewType =
+  | 'LANDING'
+  | 'SHOP'
+  | 'TRADE_GATE'
+  | 'APPLY_BUYER'
+  | 'APPLY_SUPPLIER'
+  | 'TRADE_DASHBOARD'
+  | 'ADMIN'
+  | 'AI_STUDIO'
   | 'AMUD_ENGINE'
   | 'CHEF_ADAFER'
   | 'CAT_KITCHEN'
   | 'CAT_CLOTHING'
   | 'CAT_ACCESSORIES'
   | 'CAT_SKINCARE'
-  | 'CAT_GROCERIES';
+  | 'CAT_GROCERIES'
+  // B2B Marketplace Views
+  | 'B2B_MARKETPLACE'
+  | 'B2B_SUPPLIER_DASHBOARD'
+  | 'B2B_SUPPLIER_PROFILE'
+  | 'B2B_PRODUCT_DETAIL'
+  | 'B2B_RFQ'
+  | 'B2B_MESSAGES'
+  | 'B2B_ORDERS'
+  | 'B2B_CHECKOUT';
 
 export enum VerificationStatus {
   NOT_STARTED = 'NOT_STARTED',
