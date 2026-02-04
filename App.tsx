@@ -32,10 +32,15 @@ const App: React.FC = () => {
 
   const [lastAddedId, setLastAddedId] = useState<string | null>(null);
 
+  // Save wishlist to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('ouroz_amud_vault', JSON.stringify(wishlist));
+  }, [wishlist]);
+
+  // Scroll to top whenever the current view changes
+  useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [wishlist, currentView]);
+  }, [currentView]);
 
   const toggleAmudVault = (product: Product) => {
     setWishlist(prev => {
