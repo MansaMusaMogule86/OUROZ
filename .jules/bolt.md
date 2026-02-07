@@ -19,3 +19,13 @@ This journal tracks critical learnings and performance patterns specific to the 
 Should be wrapped with `React.memo()` to prevent unnecessary re-renders.
 
 ---
+
+## 2026-02-05 - State Colocation for Landing Page Search
+
+**Learning:** The `LandingPage` component was lifting `searchQuery` state up to the top level, causing the entire page (including heavy `motion` components in `StatsSection`, `CategoriesSection`, etc.) to re-render on every keystroke. This resulted in significant unnecessary CPU usage during text input.
+
+**Action:** Moved `searchQuery` state and handler down into the `HeroSection` component where it is actually used. This isolates the re-renders to just the search input area.
+
+**Pattern for Future:** Avoid lifting state to page-level components unless absolutely necessary (e.g., shared between siblings). For controlled inputs in hero sections or headers, colocate the state within the component to prevent full-page layout thrashing.
+
+---
