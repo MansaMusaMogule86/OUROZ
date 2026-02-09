@@ -19,3 +19,13 @@ This journal tracks critical learnings and performance patterns specific to the 
 Should be wrapped with `React.memo()` to prevent unnecessary re-renders.
 
 ---
+
+## 2026-02-09 - Stable Callbacks for Memoized List Items
+
+**Learning:** `React.memo` is ineffective if props are unstable. Inline arrow functions (e.g., `onAdd={() => toggle(item)}`) create new references on every render, defeating memoization.
+
+**Action:** Pass the handler function directly (e.g., `onToggle={toggle}`) and the item data as separate props, or have the child component handle the currying (e.g., `onClick={() => onToggle(item)}`). This ensures the function prop remains referentially stable.
+
+**Result:** Significantly reduced re-renders in `B2CStorefront` when searching or filtering products, as list items now only re-render when their specific data changes.
+
+---
