@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { DUMMY_PRODUCTS, CATEGORIES } from '../../constants';
 import { Product } from '../../types';
 
@@ -9,23 +9,25 @@ interface StorefrontProps {
   onNavigateToCategory: (slug: string) => void;
 }
 
+// Optimization: Move constant data filtering outside component
+const retailProducts = DUMMY_PRODUCTS.filter(p => p.retailEnabled && p.is_active);
+
 const B2CStorefront: React.FC<StorefrontProps> = ({ wishlist, onToggleWishlist, onNavigateToCategory }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [showWishlistOnly, setShowWishlistOnly] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  const retailProducts = DUMMY_PRODUCTS.filter(p => p.retailEnabled && p.is_active);
   const displayProducts = showWishlistOnly ? wishlist : retailProducts;
 
-  const filtered = displayProducts.filter(p => {
+  const filtered = useMemo(() => displayProducts.filter(p => {
     const term = searchTerm.toLowerCase();
     const matchesSearch = p.name.toLowerCase().includes(term) || 
                           p.category.toLowerCase().includes(term) ||
                           p.search_tags.toLowerCase().includes(term);
     const matchesCategory = activeCategory === 'all' || p.category_slug === activeCategory;
     return matchesSearch && matchesCategory;
-  });
+  }), [displayProducts, searchTerm, activeCategory]);
 
   const isInAmud = (productId: string) => wishlist.some(p => p.id === productId);
 
@@ -124,7 +126,7 @@ const B2CStorefront: React.FC<StorefrontProps> = ({ wishlist, onToggleWishlist, 
           <ArtifactCard 
             key={product.id}
             product={product} 
-            onAdd={() => onToggleWishlist(product)} 
+            onToggleWishlist={onToggleWishlist}
             isInAmud={isInAmud(product.id)}
           />
         ))}
@@ -133,16 +135,17 @@ const B2CStorefront: React.FC<StorefrontProps> = ({ wishlist, onToggleWishlist, 
   );
 };
 
-const ArtifactCard: React.FC<{ 
+// Optimization: Memoized card to prevent re-renders of all cards when one updates
+const ArtifactCard = React.memo<{
   product: Product; 
-  onAdd: () => void;
+  onToggleWishlist: (p: Product) => void;
   isInAmud: boolean;
-}> = ({ product, onAdd, isInAmud }) => (
+}>(({ product, onToggleWishlist, isInAmud }) => (
   <div className="group card-vogue bg-white/40 glass-vogue overflow-hidden hover:-translate-y-8 shadow-gold-ambient border-gold/10 hover:border-gold/50 flex flex-col h-full active:scale-[0.98]">
     <div className="relative h-[500px] overflow-hidden shrink-0 bg-sahara/50">
-      <img src={product.image} className="w-full h-full object-cover grayscale-[0.3] contrast-125 transition-all duration-1000 group-hover:scale-110 group-hover:grayscale-0" alt={product.name} />
+      <img loading="lazy" src={product.image} className="w-full h-full object-cover grayscale-[0.3] contrast-125 transition-all duration-1000 group-hover:scale-110 group-hover:grayscale-0" alt={product.name} />
       <div className="absolute inset-0 bg-henna/0 group-hover:bg-henna/10 transition-all duration-700 flex items-center justify-center opacity-0 group-hover:opacity-100">
-         <button onClick={onAdd} className="px-10 py-5 bg-sahara text-henna rounded-full shadow-luxury heading-vogue text-[10px] hover:bg-gold hover:text-white transition-all transform hover:scale-110">
+         <button onClick={() => onToggleWishlist(product)} className="px-10 py-5 bg-sahara text-henna rounded-full shadow-luxury heading-vogue text-[10px] hover:bg-gold hover:text-white transition-all transform hover:scale-110">
            {isInAmud ? 'Remove Trace' : 'Trace to Amud'}
          </button>
       </div>
@@ -163,12 +166,12 @@ const ArtifactCard: React.FC<{
       
       <div className="flex items-center justify-between mt-auto pt-10 border-t border-gold/10">
         <span className="heading-vogue text-3xl text-henna tracking-tighter">{product.price.toFixed(0)} <span className="text-[10px] font-sans text-gold uppercase tracking-[0.4em]">{product.currency}</span></span>
-        <button onClick={onAdd} className={`w-16 h-16 rounded-full flex items-center justify-center transition-all transform hover:scale-125 active:scale-90 shadow-luxury ${isInAmud ? 'bg-majorelle text-white' : 'bg-henna text-white hover:bg-majorelle'}`}>
+        <button onClick={() => onToggleWishlist(product)} className={`w-16 h-16 rounded-full flex items-center justify-center transition-all transform hover:scale-125 active:scale-90 shadow-luxury ${isInAmud ? 'bg-majorelle text-white' : 'bg-henna text-white hover:bg-majorelle'}`}>
            <span className="text-2xl font-serif">ⵣ</span>
         </button>
       </div>
     </div>
   </div>
-);
+));
 
 export default B2CStorefront;
