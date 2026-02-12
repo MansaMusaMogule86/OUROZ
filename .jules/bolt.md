@@ -19,3 +19,11 @@ This journal tracks critical learnings and performance patterns specific to the 
 Should be wrapped with `React.memo()` to prevent unnecessary re-renders.
 
 ---
+
+## 2026-02-12 - Debounce Search Input
+
+**Learning:** In `BuyerMarketplace.tsx`, the search input was updating the parent component's filter state on every keystroke. This caused the entire product grid to re-render and re-filter the list on every character typed, leading to sluggish performance.
+
+**Action:** Implemented a debounced local state in `MarketplaceHeader`. The input updates local state immediately, but the parent's `onSearchChange` handler is only called after a 300ms delay using `useEffect`. This significantly reduces the frequency of expensive re-renders and filtering operations.
+
+**Pattern for Future:** For any search input or filter that triggers complex calculations or list re-rendering, use a local state with debounce logic to update the main state only when the user pauses typing.
