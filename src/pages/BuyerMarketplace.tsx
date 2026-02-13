@@ -329,54 +329,77 @@ const MarketplaceHeader: React.FC<{
     search: string;
     onSearchChange: (s: string) => void;
     onNavigate: (path: string) => void;
-}> = ({ search, onSearchChange, onNavigate }) => (
-    <header className="bg-white border-b sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center gap-6">
-                {/* Logo */}
-                <div className="flex items-center gap-2 cursor-pointer" onClick={() => onNavigate('/')}>
-                    <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-amber-700 rounded-full flex items-center justify-center">
-                        <span className="text-white font-serif">ⵣ</span>
-                    </div>
-                    <span className="text-xl font-serif font-bold text-gray-900">OUROZ</span>
-                </div>
+}> = ({ search, onSearchChange, onNavigate }) => {
+    // Local state for debounced search
+    const [localSearch, setLocalSearch] = useState(search);
 
-                {/* Search */}
-                <div className="flex-1 max-w-2xl">
-                    <div className="relative">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                        <input
-                            type="text"
-                            value={search}
-                            onChange={(e) => onSearchChange(e.target.value)}
-                            placeholder="Search products, suppliers, or keywords..."
-                            className="w-full pl-12 pr-4 py-3 bg-gray-100 rounded-xl border-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition"
-                        />
-                    </div>
-                </div>
+    // Update local state when prop changes (e.g. from clear filters)
+    useEffect(() => {
+        setLocalSearch(search);
+    }, [search]);
 
-                {/* Actions */}
-                <nav className="flex items-center gap-4">
-                    <button onClick={() => onNavigate('/rfq/create')} className="text-gray-600 hover:text-gray-900 flex items-center gap-2">
-                        <FileText className="w-5 h-5" />
-                        <span className="hidden lg:inline">Submit RFQ</span>
-                    </button>
-                    <button onClick={() => onNavigate('/favorites')} className="text-gray-600 hover:text-gray-900 flex items-center gap-2">
-                        <Heart className="w-5 h-5" />
-                        <span className="hidden lg:inline">Favorites</span>
-                    </button>
-                    <button onClick={() => onNavigate('/messages')} className="text-gray-600 hover:text-gray-900 flex items-center gap-2">
-                        <MessageCircle className="w-5 h-5" />
-                        <span className="hidden lg:inline">Messages</span>
-                    </button>
-                    <button onClick={() => onNavigate('/account')} className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center text-amber-700 font-semibold">
-                        B
-                    </button>
-                </nav>
+    // Debounce search input to prevent expensive re-renders on every keystroke
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            if (localSearch !== search) {
+                onSearchChange(localSearch);
+            }
+        }, 300);
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [localSearch, search, onSearchChange]);
+
+    return (
+        <header className="bg-white border-b sticky top-0 z-40">
+            <div className="container mx-auto px-4 py-4">
+                <div className="flex items-center gap-6">
+                    {/* Logo */}
+                    <div className="flex items-center gap-2 cursor-pointer" onClick={() => onNavigate('/')}>
+                        <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-amber-700 rounded-full flex items-center justify-center">
+                            <span className="text-white font-serif">ⵣ</span>
+                        </div>
+                        <span className="text-xl font-serif font-bold text-gray-900">OUROZ</span>
+                    </div>
+
+                    {/* Search */}
+                    <div className="flex-1 max-w-2xl">
+                        <div className="relative">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                            <input
+                                type="text"
+                                value={localSearch}
+                                onChange={(e) => setLocalSearch(e.target.value)}
+                                placeholder="Search products, suppliers, or keywords..."
+                                className="w-full pl-12 pr-4 py-3 bg-gray-100 rounded-xl border-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Actions */}
+                    <nav className="flex items-center gap-4">
+                        <button onClick={() => onNavigate('/rfq/create')} className="text-gray-600 hover:text-gray-900 flex items-center gap-2">
+                            <FileText className="w-5 h-5" />
+                            <span className="hidden lg:inline">Submit RFQ</span>
+                        </button>
+                        <button onClick={() => onNavigate('/favorites')} className="text-gray-600 hover:text-gray-900 flex items-center gap-2">
+                            <Heart className="w-5 h-5" />
+                            <span className="hidden lg:inline">Favorites</span>
+                        </button>
+                        <button onClick={() => onNavigate('/messages')} className="text-gray-600 hover:text-gray-900 flex items-center gap-2">
+                            <MessageCircle className="w-5 h-5" />
+                            <span className="hidden lg:inline">Messages</span>
+                        </button>
+                        <button onClick={() => onNavigate('/account')} className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center text-amber-700 font-semibold">
+                            B
+                        </button>
+                    </nav>
+                </div>
             </div>
-        </div>
-    </header>
-);
+        </header>
+    );
+};
 
 const QuickFilters: React.FC<{
     filters: FilterState;
