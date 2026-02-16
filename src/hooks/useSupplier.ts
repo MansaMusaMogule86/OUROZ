@@ -6,7 +6,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
     SupplierProfile,
-    FeaturedProduct,
+    // FeaturedProduct, // REMOVED: Replaced by Product from product.types
     Review,
     GalleryItem,
     GetProductsParams,
@@ -16,6 +16,12 @@ import {
     PaginationInfo,
     RatingDistribution,
 } from '../types/supplier';
+import {
+    Product, // NEW
+    CreateProductPayload, // NEW
+    UpdateProductPayload, // NEW
+    PaginatedProductsResponse, // NEW
+} from '../types/product.types'; // NEW
 
 const API_BASE = '/api/suppliers';
 
@@ -95,19 +101,22 @@ export function useSupplierProfile(supplierId: string): UseSupplierProfileResult
 // ============================================
 
 interface UseSupplierProductsResult {
-    products: FeaturedProduct[];
+    products: Product[]; // Changed from FeaturedProduct[]
     pagination: PaginationInfo | null;
     loading: boolean;
     error: string | null;
     fetchPage: (page: number) => void;
     setParams: (params: GetProductsParams) => void;
+    createProduct: (payload: CreateProductPayload) => Promise<{ success: boolean; error?: string; productId?: string }>; // NEW
+    updateProduct: (productId: string, payload: UpdateProductPayload) => Promise<{ success: boolean; error?: string }>; // NEW
+    deleteProduct: (productId: string) => Promise<{ success: boolean; error?: string }>; // NEW
 }
 
 export function useSupplierProducts(
     supplierId: string,
     initialParams: GetProductsParams = {}
 ): UseSupplierProductsResult {
-    const [products, setProducts] = useState<FeaturedProduct[]>([]);
+    const [products, setProducts] = useState<Product[]>([]); // Changed from FeaturedProduct[]
     const [pagination, setPagination] = useState<PaginationInfo | null>(null);
     const [params, setParams] = useState<GetProductsParams>(initialParams);
     const [loading, setLoading] = useState(true);
@@ -126,7 +135,7 @@ export function useSupplierProducts(
         if (params.sort) queryParams.set('sort', params.sort);
 
         const url = `${API_BASE}/${supplierId}/products?${queryParams}`;
-        const result = await apiFetch<{ products: FeaturedProduct[]; pagination: PaginationInfo }>(url);
+        const result = await apiFetch<PaginatedProductsResponse>(url); // Changed type
 
         if (result.success && result.data) {
             setProducts(result.data.products);
@@ -146,7 +155,53 @@ export function useSupplierProducts(
         setParams(prev => ({ ...prev, page }));
     };
 
-    return { products, pagination, loading, error, fetchPage, setParams };
+    // NEW: Product management functions
+    const createProduct = async (
+        payload: CreateProductPayload
+    ): Promise<{ success: boolean; error?: string; productId?: string }> => {
+        // setLoading(true); // Decide if you want to set loading for mutations
+        const result = await apiFetch<{ id: string }>(`${API_BASE}/${supplierId}/products`, {
+            method: 'POST',
+            body: JSON.stringify(payload),
+        });
+        // setLoading(false);
+        if (result.success) {
+            fetchProducts(); // Refetch products to update the list
+            return { success: true, productId: result.data?.id };
+        }
+        return { success: false, error: result.error };
+    };
+
+    const updateProduct = async (
+        productId: string,
+        payload: UpdateProductPayload
+    ): Promise<{ success: boolean; error?: string }> => {
+        // setLoading(true);
+        const result = await apiFetch(`${API_BASE}/${supplierId}/products/${productId}`, {
+            method: 'PUT',
+            body: JSON.stringify(payload),
+        });
+        // setLoading(false);
+        if (result.success) {
+            fetchProducts(); // Refetch products to update the list
+        }
+        return { success: result.success, error: result.error };
+    };
+
+    const deleteProduct = async (productId: string): Promise<{ success: boolean; error?: string }> => {
+        // setLoading(true);
+        const result = await apiFetch(`${API_BASE}/${supplierId}/products/${productId}`, {
+            method: 'DELETE',
+        });
+        // setLoading(false);
+        if (result.success) {
+            fetchProducts(); // Refetch products to update the list
+        }
+        return { success: result.success, error: result.error };
+    };
+
+
+    return { products, pagination, loading, error, fetchPage, setParams, createProduct, updateProduct, deleteProduct };
 }
 
 // ============================================

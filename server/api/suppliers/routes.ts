@@ -8,6 +8,7 @@ import { authenticate, authorize, optionalAuth } from '../../middleware/auth';
 import * as controller from './controller';
 import { validateRequest } from '../../middleware/validation';
 import * as schemas from './schemas';
+import productRoutes from './product_routes';
 
 const router = Router();
 
@@ -26,6 +27,8 @@ router.get(
     optionalAuth, // Optional: to track if user favorited
     controller.getSupplierProfile
 );
+
+router.use('/:id/products', productRoutes); // Nested product routes
 
 /**
  * GET /api/suppliers/:id/products

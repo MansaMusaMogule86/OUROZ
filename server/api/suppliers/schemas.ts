@@ -124,3 +124,55 @@ export type AddCertificationBody = z.infer<typeof addCertificationBody>;
 export type ReviewResponseBody = z.infer<typeof reviewResponseBody>;
 export type UpdateVerificationBody = z.infer<typeof updateVerificationBody>;
 export type UpdateStatusBody = z.infer<typeof updateStatusBody>;
+
+// NEW PRODUCT SCHEMAS
+export const createProductBody = z.object({
+    name: z.string().min(2).max(255),
+    nameAr: z.string().max(255).optional(),
+    nameFr: z.string().max(255).optional(),
+    description: z.string().max(5000).optional(),
+    imageUrl: z.string().url().max(500).optional().nullable(),
+    priceMin: z.number().positive().optional(),
+    priceMax: z.number().positive().optional(),
+    currency: z.string().length(3).default('USD'),
+    moq: z.number().int().positive().default(1),
+    categoryId: z.string().uuid().optional(),
+    isFeatured: z.boolean().optional().default(false),
+    isActive: z.boolean().optional().default(true),
+}).refine(data => {
+    if (data.priceMin && data.priceMax && data.priceMin > data.priceMax) {
+        throw new Error("priceMin cannot be greater than priceMax");
+    }
+    return true;
+}, {
+    message: "priceMin cannot be greater than priceMax",
+    path: ["priceMin"],
+});
+
+export const updateProductBody = z.object({
+    name: z.string().min(2).max(255).optional(),
+    nameAr: z.string().max(255).optional(),
+    nameFr: z.string().max(255).optional(),
+    description: z.string().max(5000).optional(),
+    imageUrl: z.string().url().max(500).optional().nullable(),
+    priceMin: z.number().positive().optional(),
+    priceMax: z.number().positive().optional(),
+    currency: z.string().length(3).optional(),
+    moq: z.number().int().positive().optional(),
+    categoryId: z.string().uuid().optional(),
+    isFeatured: z.boolean().optional(),
+    isActive: z.boolean().optional(),
+}).refine(data => {
+    if (data.priceMin && data.priceMax && data.priceMin > data.priceMax) {
+        throw new Error("priceMin cannot be greater than priceMax");
+    }
+    return true;
+}, {
+    message: "priceMin cannot be greater than priceMax",
+    path: ["priceMin"],
+});
+
+// TYPE EXPORTS
+export type CreateProductBody = z.infer<typeof createProductBody>;
+export type UpdateProductBody = z.infer<typeof updateProductBody>;
+

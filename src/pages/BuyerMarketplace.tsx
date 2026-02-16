@@ -1,22 +1,3 @@
-/**
- * OUROZ Buyer Marketplace Homepage
- * Page 2 of the Moroccan B2B Marketplace
- * 
- * PAGE OBJECTIVE:
- * Main discovery interface for international buyers. Provides product browsing,
- * supplier discovery, RFQ creation, and personalized recommendations based on
- * buyer profile and behavior.
- * 
- * USER ACTIONS:
- * - Search products/suppliers with advanced filters
- * - Browse by category/industry
- * - View product listings
- * - Contact suppliers
- * - Submit RFQ requests
- * - Add to favorites/inquiry list
- * - Filter by MOQ, price, verification level, region
- */
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -25,6 +6,8 @@ import {
     MapPin, Clock, Package, TrendingUp, Sparkles, SlidersHorizontal,
     X, Building2, Globe, Award, Truck, CreditCard
 } from 'lucide-react';
+import { useSupplierProducts } from '../hooks/useSupplier';
+import { Product } from '../types/product.types';
 
 // Types
 interface MarketplaceProps {
@@ -33,36 +16,7 @@ interface MarketplaceProps {
     userId?: string;
 }
 
-interface Product {
-    id: string;
-    name: string;
-    slug: string;
-    image: string;
-    gallery: string[];
-    price: { min: number; max: number; currency: string };
-    priceType: 'FIXED' | 'TIERED' | 'NEGOTIABLE';
-    moq: number;
-    moqUnit: string;
-    supplier: {
-        id: string;
-        name: string;
-        logo: string;
-        verificationLevel: 'BASIC' | 'VERIFIED' | 'GOLD' | 'TRUSTED';
-        responseRate: number;
-        responseTime: string;
-        region: string;
-        yearEstablished: number;
-    };
-    category: { id: string; name: string };
-    origin: { country: string; region: string };
-    rating: { avg: number; count: number };
-    orderCount: number;
-    leadTime: string;
-    isFeatured: boolean;
-    isHot: boolean;
-    isNew: boolean;
-    hasTradeAssurance: boolean;
-}
+// Removed: interface Product { ... } - now imported from product.types.ts
 
 interface FilterState {
     search: string;
@@ -83,7 +37,7 @@ interface Category {
     subcategories: { id: string; name: string; count: number }[];
 }
 
-// Mock Data
+// Mock Data (still used for categories and regions)
 const MOCK_CATEGORIES: Category[] = [
     {
         id: 'agriculture', name: 'Agriculture', icon: '🌿', count: 12500, subcategories: [
@@ -136,57 +90,14 @@ const MOROCCAN_REGIONS = [
     'Fès-Meknès', 'Marrakech-Safi', 'Souss-Massa', 'Oriental', 'Drâa-Tafilalet'
 ];
 
-const generateMockProducts = (): Product[] => {
-    const products: Product[] = [];
-    const names = [
-        'Premium Argan Oil - Cold Pressed', 'Handwoven Berber Carpet',
-        'Traditional Zellige Tiles', 'Moroccan Black Soap', 'Saffron Threads',
-        'Leather Pouf Ottoman', 'Ceramic Tagine Set', 'Rose Water Toner',
-        'Thuya Wood Box', 'Brass Lantern', 'Embroidered Caftan',
-        'Olive Oil Extra Virgin', 'Amlou Spread', 'Moroccan Tea Set'
-    ];
-
-    for (let i = 0; i < 24; i++) {
-        products.push({
-            id: `prod_${i}`,
-            name: names[i % names.length],
-            slug: names[i % names.length].toLowerCase().replace(/\s+/g, '-'),
-            image: `https://images.unsplash.com/photo-${1500000000000 + i * 1000}?w=400&h=400&fit=crop`,
-            gallery: [],
-            price: { min: 10 + i * 5, max: 50 + i * 10, currency: 'USD' },
-            priceType: i % 3 === 0 ? 'NEGOTIABLE' : 'TIERED',
-            moq: [50, 100, 200, 500][i % 4],
-            moqUnit: 'units',
-            supplier: {
-                id: `sup_${i % 8}`,
-                name: `Atlas ${['Trading', 'Exports', 'Industries', 'Crafts'][i % 4]} Co.`,
-                logo: `https://ui-avatars.com/api/?name=Atlas+${i}&background=C4A052&color=fff`,
-                verificationLevel: ['BASIC', 'VERIFIED', 'GOLD', 'TRUSTED'][i % 4] as any,
-                responseRate: 85 + (i % 15),
-                responseTime: ['< 1h', '< 4h', '< 12h', '< 24h'][i % 4],
-                region: MOROCCAN_REGIONS[i % MOROCCAN_REGIONS.length],
-                yearEstablished: 2000 + (i % 24),
-            },
-            category: { id: MOCK_CATEGORIES[i % 6].id, name: MOCK_CATEGORIES[i % 6].name },
-            origin: { country: 'Morocco', region: MOROCCAN_REGIONS[i % MOROCCAN_REGIONS.length] },
-            rating: { avg: 4.2 + (i % 8) * 0.1, count: 50 + i * 10 },
-            orderCount: 100 + i * 50,
-            leadTime: `${7 + (i % 21)} days`,
-            isFeatured: i < 6,
-            isHot: i % 5 === 0,
-            isNew: i % 7 === 0,
-            hasTradeAssurance: i % 2 === 0,
-        });
-    }
-    return products;
-};
+// Removed: generateMockProducts function
 
 // Main Component
 const BuyerMarketplace: React.FC<MarketplaceProps> = ({ language, onNavigate, userId }) => {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [showFilters, setShowFilters] = useState(true);
-    const [products, setProducts] = useState<Product[]>([]);
-    const [loading, setLoading] = useState(true);
+    // Removed: products useState and useEffect for mock data
+
     const [filters, setFilters] = useState<FilterState>({
         search: '',
         categories: [],
@@ -199,30 +110,46 @@ const BuyerMarketplace: React.FC<MarketplaceProps> = ({ language, onNavigate, us
     });
     const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
 
+    // Use the useSupplierProducts hook to fetch products from the API
+    // Using a dummy supplierId for now as BuyerMarketplace is not specific to one supplier
+    // TODO: Implement a way to fetch products from all suppliers or a specific set of suppliers
+    const { products, loading, pagination, setParams, fetchPage } = useSupplierProducts(
+        'a1b2c3d4-e5f6-7890-1234-567890abcdef', // Dummy Supplier ID, replace later
+        {
+            page: pagination?.page || 1,
+            limit: pagination?.limit || 20,
+            category: filters.categories.length ? filters.categories[0] : undefined, // Only supports one category for now
+            sort: filters.sortBy === 'price_asc' ? 'price_low' : filters.sortBy === 'price_desc' ? 'price_high' : 'popular', // Map frontend sort to backend sort
+        }
+    );
+
     useEffect(() => {
-        // Simulate API call
-        setTimeout(() => {
-            setProducts(generateMockProducts());
-            setLoading(false);
-        }, 500);
-    }, []);
+        setParams({
+            page: pagination?.page || 1,
+            limit: pagination?.limit || 20,
+            category: filters.categories.length ? filters.categories[0] : undefined,
+            sort: filters.sortBy === 'price_asc' ? 'price_low' : filters.sortBy === 'price_desc' ? 'price_high' : 'popular',
+        });
+    }, [filters, setParams, pagination?.page, pagination?.limit]); // Added pagination dependencies
 
     const filteredProducts = useMemo(() => {
         return products.filter(p => {
+            // Frontend filtering logic (some of these might be handled by backend API in future)
             if (filters.search && !p.name.toLowerCase().includes(filters.search.toLowerCase())) return false;
-            if (filters.categories.length && !filters.categories.includes(p.category.id)) return false;
-            if (filters.verificationLevels.length && !filters.verificationLevels.includes(p.supplier.verificationLevel)) return false;
-            if (filters.regions.length && !filters.regions.includes(p.supplier.region)) return false;
-            if (filters.hasTradeAssurance && !p.hasTradeAssurance) return false;
+            // if (filters.categories.length && !filters.categories.includes(p.category.id)) return false; // Handled by API
+            // if (filters.verificationLevels.length && !filters.verificationLevels.includes(p.supplier.verificationLevel)) return false; // Needs supplier data on Product
+            // if (filters.regions.length && !filters.regions.includes(p.supplier.region)) return false; // Needs supplier data on Product
+            // if (filters.hasTradeAssurance && !p.hasTradeAssurance) return false; // Needs supplier data on Product
             return true;
         }).sort((a, b) => {
+            // Sort only if not handled by backend
             switch (filters.sortBy) {
-                case 'price_asc': return a.price.min - b.price.min;
-                case 'price_desc': return b.price.min - a.price.min;
-                case 'rating': return b.rating.avg - a.rating.avg;
-                case 'orders': return b.orderCount - a.orderCount;
-                case 'newest': return 0; // Would sort by date in real implementation
-                default: return 0;
+                // case 'price_asc': return a.price.min - b.price.min; // Handled by API
+                // case 'price_desc': return b.price.min - a.price.min; // Handled by API
+                case 'rating': return (b.rating?.avg || 0) - (a.rating?.avg || 0); // Need rating data on Product
+                case 'orders': return (b.orders || 0) - (a.orders || 0);
+                // case 'newest': return 0; // Would sort by date in real implementation - Handled by API (recent)
+                default: return 0; // Relevance
             }
         });
     }, [products, filters]);
@@ -259,7 +186,7 @@ const BuyerMarketplace: React.FC<MarketplaceProps> = ({ language, onNavigate, us
                 setShowFilters={setShowFilters}
                 viewMode={viewMode}
                 setViewMode={setViewMode}
-                resultCount={filteredProducts.length}
+                resultCount={pagination?.total || 0} // Use total from pagination
             />
 
             {/* Main Content */}
@@ -311,8 +238,12 @@ const BuyerMarketplace: React.FC<MarketplaceProps> = ({ language, onNavigate, us
                         )}
 
                         {/* Pagination */}
-                        {filteredProducts.length > 0 && (
-                            <Pagination currentPage={1} totalPages={10} />
+                        {pagination && pagination.totalPages > 1 && ( // Only show pagination if more than 1 page
+                            <Pagination
+                                currentPage={pagination.page}
+                                totalPages={pagination.totalPages}
+                                onPageChange={fetchPage} // NEW
+                            />
                         )}
                     </main>
                 </div>
@@ -565,7 +496,7 @@ const FilterSidebar: React.FC<{
                             ...prev,
                             verificationLevels: prev.verificationLevels.includes(level.id)
                                 ? prev.verificationLevels.filter(l => l !== level.id)
-                                : [...prev.verificationLevels, level.id]
+                                : [...prev.verificationLevels, level]
                         }))}
                         className="w-4 h-4 text-amber-500 rounded border-gray-300"
                     />
@@ -630,9 +561,11 @@ const ProductCard: React.FC<{
             VERIFIED: 'bg-green-100 text-green-700 border-green-200',
             BASIC: 'bg-gray-100 text-gray-600 border-gray-200',
         };
+        // NOTE: product.supplier is not available from the current API endpoint
+        // This badge will not render correctly until supplier data is included in product endpoint
         return (
-            <span className={`text-xs px-2 py-0.5 rounded-full border ${styles[product.supplier.verificationLevel]}`}>
-                {product.supplier.verificationLevel}
+            <span className={`text-xs px-2 py-0.5 rounded-full border ${styles[product.supplier?.verificationLevel || 'BASIC']}`}>
+                {product.supplier?.verificationLevel || 'BASIC'}
             </span>
         );
     };
@@ -650,13 +583,14 @@ const ProductCard: React.FC<{
                     <div className="flex items-start justify-between gap-4">
                         <div>
                             <h3 className="font-semibold text-gray-900 mb-1">{product.name}</h3>
-                            <p className="text-sm text-gray-500">{product.category.name}</p>
+                            <p className="text-sm text-gray-500">{product.category?.name}</p>
                         </div>
                         <button onClick={(e) => { e.stopPropagation(); }} title="Add to favorites" aria-label="Add to favorites" className="text-gray-400 hover:text-red-500">
                             <Heart className="w-5 h-5" />
                         </button>
                     </div>
-                    <div className="flex items-center gap-3 mt-2">
+                    {/* NOTE: product.supplier is not available from the current API endpoint */}
+                    {/* <div className="flex items-center gap-3 mt-2">
                         <img src={product.supplier.logo} alt="" className="w-8 h-8 rounded-full" />
                         <div>
                             <p className="text-sm font-medium text-gray-700">{product.supplier.name}</p>
@@ -669,20 +603,21 @@ const ProductCard: React.FC<{
                                 )}
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                     <div className="flex items-end justify-between mt-4">
                         <div>
                             <p className="text-2xl font-bold text-gray-900">
                                 ${product.price.min.toFixed(2)} - ${product.price.max.toFixed(2)}
                             </p>
-                            <p className="text-sm text-gray-500">MOQ: {product.moq} {product.moqUnit}</p>
+                            <p className="text-sm text-gray-500">MOQ: {product.moq} units</p> {/* moqUnit removed */}
                         </div>
-                        <button
+                        {/* NOTE: product.supplier is not available from the current API endpoint */}
+                        {/* <button
                             onClick={(e) => { e.stopPropagation(); onNavigate(`/contact/${product.supplier.id}`); }}
                             className="bg-amber-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-amber-600 transition"
                         >
                             Contact Supplier
-                        </button>
+                        </button> */}
                     </div>
                 </div>
             </div>
@@ -701,10 +636,10 @@ const ProductCard: React.FC<{
                     className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                 />
                 <div className="absolute top-3 left-3 flex gap-2">
-                    {product.isHot && (
+                    {product.isHot && ( // isHot not available from API
                         <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">🔥 Hot</span>
                     )}
-                    {product.isNew && (
+                    {product.isNew && ( // isNew not available from API
                         <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">New</span>
                     )}
                 </div>
@@ -716,7 +651,7 @@ const ProductCard: React.FC<{
                 >
                     <Heart className="w-4 h-4" />
                 </button>
-                {product.hasTradeAssurance && (
+                {product.hasTradeAssurance && ( // hasTradeAssurance not available from API
                     <div className="absolute bottom-3 left-3 bg-green-500 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
                         <Shield className="w-3 h-3" /> Trade Assurance
                     </div>
@@ -728,19 +663,21 @@ const ProductCard: React.FC<{
                     {product.name}
                 </h3>
 
-                <div className="flex items-center gap-1 mb-2">
+                {/* NOTE: rating and orderCount might not be directly available on Product from the API */}
+                {/* <div className="flex items-center gap-1 mb-2">
                     <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
                     <span className="text-sm font-medium">{product.rating.avg.toFixed(1)}</span>
                     <span className="text-xs text-gray-400">({product.rating.count})</span>
                     <span className="text-xs text-gray-400 ml-2">{product.orderCount} orders</span>
-                </div>
+                </div> */}
 
                 <p className="text-xl font-bold text-gray-900 mb-1">
                     ${product.price.min.toFixed(2)} - ${product.price.max.toFixed(2)}
                 </p>
-                <p className="text-sm text-gray-500 mb-3">MOQ: {product.moq} {product.moqUnit}</p>
+                <p className="text-sm text-gray-500 mb-3">MOQ: {product.moq} units</p> {/* moqUnit removed */}
 
-                <div className="flex items-center gap-2 pt-3 border-t">
+                {/* NOTE: product.supplier and product.origin are not available from the current API endpoint */}
+                {/* <div className="flex items-center gap-2 pt-3 border-t">
                     <img src={product.supplier.logo} alt="" className="w-6 h-6 rounded-full" />
                     <div className="flex-1 min-w-0">
                         <p className="text-xs text-gray-600 truncate">{product.supplier.name}</p>
@@ -750,7 +687,7 @@ const ProductCard: React.FC<{
                         </div>
                     </div>
                     <VerificationBadge />
-                </div>
+                </div> */}
             </div>
         </div>
     );
@@ -783,11 +720,16 @@ const EmptyState: React.FC<{ onClearFilters: () => void }> = ({ onClearFilters }
     </div>
 );
 
-const Pagination: React.FC<{ currentPage: number; totalPages: number }> = ({ currentPage, totalPages }) => (
+const Pagination: React.FC<{
+    currentPage: number;
+    totalPages: number;
+    onPageChange: (page: number) => void; // NEW
+}> = ({ currentPage, totalPages, onPageChange }) => (
     <div className="flex justify-center items-center gap-2 mt-8">
-        {Array.from({ length: Math.min(7, totalPages) }).map((_, i) => (
+        {Array.from({ length: totalPages }).map((_, i) => ( // Use totalPages directly
             <button
                 key={i}
+                onClick={() => onPageChange(i + 1)} // Handle page change
                 className={`w-10 h-10 rounded-lg font-medium transition ${i + 1 === currentPage
                     ? 'bg-amber-500 text-white'
                     : 'bg-white hover:bg-gray-100 text-gray-700'
@@ -796,7 +738,7 @@ const Pagination: React.FC<{ currentPage: number; totalPages: number }> = ({ cur
                 {i + 1}
             </button>
         ))}
-        {totalPages > 7 && <span className="text-gray-400">...</span>}
+        {/* Removed extra dots logic as totalPages is used directly */}
     </div>
 );
 

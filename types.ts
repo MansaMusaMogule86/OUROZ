@@ -112,7 +112,12 @@ export type ViewType =
   | 'B2B_RFQ'
   | 'B2B_MESSAGES'
   | 'B2B_ORDERS'
-  | 'B2B_CHECKOUT';
+  | 'B2B_CHECKOUT'
+  // Additional Views
+  | 'PRODUCT_DETAIL'
+  | 'CART'
+  | 'ABOUT'
+  | 'ACCOUNT';
 
 export enum VerificationStatus {
   NOT_STARTED = 'NOT_STARTED',

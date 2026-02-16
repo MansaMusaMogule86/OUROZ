@@ -8,11 +8,15 @@ import ApplicationForm from './components/ApplicationForm';
 import AdminDashboard from './components/Admin/AdminDashboard';
 import B2BDashboard from './components/B2B/Dashboard';
 import B2CStorefront from './components/B2C/Storefront';
+import ProductDetailPage from './components/B2C/ProductDetailPage';
+import CartPage, { CartItem } from './components/B2C/CartPage';
 import VoiceSupport from './components/VoiceSupport';
 import AIStudio from './components/AI/AIStudio';
 import Assistant from './components/AI/Assistant';
 import CategoryPage from './components/Categories/CategoryPage';
 import ChefAtelier from './components/ChefAtelier';
+import AboutPage from './components/AboutPage';
+import AccountPage from './components/AccountPage';
 
 // B2B Marketplace Pages
 import BuyerMarketplace from './src/pages/BuyerMarketplace';
@@ -35,8 +39,17 @@ const App: React.FC = () => {
   });
 
   const [isVoiceOpen, setIsVoiceOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+  // Wishlist state
   const [wishlist, setWishlist] = useState<Product[]>(() => {
     const saved = localStorage.getItem('ouroz_amud_vault');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  // Cart state
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    const saved = localStorage.getItem('ouroz_cart');
     return saved ? JSON.parse(saved) : [];
   });
 
@@ -44,8 +57,15 @@ const App: React.FC = () => {
 
   useEffect(() => {
     localStorage.setItem('ouroz_amud_vault', JSON.stringify(wishlist));
+  }, [wishlist]);
+
+  useEffect(() => {
+    localStorage.setItem('ouroz_cart', JSON.stringify(cart));
+  }, [cart]);
+
+  useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [wishlist, currentView]);
+  }, [currentView]);
 
   const toggleAmudVault = (product: Product) => {
     setWishlist(prev => {
@@ -58,14 +78,61 @@ const App: React.FC = () => {
     });
   };
 
+  const addToCart = (product: Product, qty: number = 1) => {
+    setCart(prev => {
+      const existing = prev.find(item => item.product.id === product.id);
+      if (existing) {
+        return prev.map(item =>
+          item.product.id === product.id
+            ? { ...item, quantity: item.quantity + qty }
+            : item
+        );
+      }
+      return [...prev, { product, quantity: qty }];
+    });
+    setLastAddedId(product.id);
+    setTimeout(() => setLastAddedId(null), 1000);
+  };
+
+  const updateCartQuantity = (productId: string, quantity: number) => {
+    setCart(prev => prev.map(item =>
+      item.product.id === productId ? { ...item, quantity } : item
+    ));
+  };
+
+  const removeFromCart = (productId: string) => {
+    setCart(prev => prev.filter(item => item.product.id !== productId));
+  };
+
+  const clearCart = () => setCart([]);
+
+  const handleViewProduct = (product: Product) => {
+    setSelectedProduct(product);
+    setCurrentView('PRODUCT_DETAIL');
+  };
+
   const handleModeToggle = (mode: 'RETAIL' | 'WHOLESALE') => {
     setTradeMode(mode);
     if (mode === 'WHOLESALE') {
-      setCurrentView(user.status === ApplicationStatus.APPROVED ? 'TRADE_DASHBOARD' : 'TRADE_GATE');
+      if (user.status === ApplicationStatus.APPROVED) {
+        setCurrentView('B2B_MARKETPLACE');
+      } else {
+        setCurrentView('TRADE_GATE');
+      }
     } else {
       setCurrentView('SHOP');
     }
   };
+
+  const catProps = (name: string, slug: string) => ({
+    categoryName: name,
+    categorySlug: slug,
+    onBack: () => setCurrentView('SHOP'),
+    onAddToCart: (product: Product) => addToCart(product),
+    onViewProduct: handleViewProduct,
+    wishlist,
+    onToggleWishlist: toggleAmudVault,
+  });
 
   const renderContent = () => {
     switch (currentView) {
@@ -82,22 +149,67 @@ const App: React.FC = () => {
           };
           setCurrentView(catMap[slug] || 'SHOP');
         }} />;
+      case 'PRODUCT_DETAIL':
+        return selectedProduct ? (
+          <ProductDetailPage
+            product={selectedProduct}
+            onBack={() => setCurrentView('SHOP')}
+            onAddToCart={addToCart}
+            onToggleWishlist={toggleAmudVault}
+            isInWishlist={wishlist.some(p => p.id === selectedProduct.id)}
+            onViewProduct={handleViewProduct}
+          />
+        ) : (
+          <B2CStorefront wishlist={wishlist} onToggleWishlist={toggleAmudVault} onNavigateToCategory={() => {}} />
+        );
+      case 'CART':
+        return (
+          <CartPage
+            items={cart}
+            onUpdateQuantity={updateCartQuantity}
+            onRemoveItem={removeFromCart}
+            onClearCart={clearCart}
+            onContinueShopping={() => setCurrentView('SHOP')}
+            onViewProduct={handleViewProduct}
+          />
+        );
       case 'CHEF_ADAFER':
         return <ChefAtelier onBack={() => setCurrentView('SHOP')} wishlist={wishlist} onToggleVault={toggleAmudVault} />;
       case 'CAT_KITCHEN':
-        return <CategoryPage categoryName="Artisan Kitchen" categorySlug="kitchen-accessories" onBack={() => setCurrentView('SHOP')} onAddToCart={() => { }} />;
+        return <CategoryPage {...catProps('Artisan Kitchen', 'kitchen-accessories')} />;
       case 'CAT_CLOTHING':
-        return <CategoryPage categoryName="Heritage Clothing" categorySlug="clothing" onBack={() => setCurrentView('SHOP')} onAddToCart={() => { }} />;
+        return <CategoryPage {...catProps('Heritage Clothing', 'clothing')} />;
       case 'CAT_ACCESSORIES':
-        return <CategoryPage categoryName="Jewelry & Metalwork" categorySlug="accessories" onBack={() => setCurrentView('SHOP')} onAddToCart={() => { }} />;
+        return <CategoryPage {...catProps('Jewelry & Metalwork', 'accessories')} />;
       case 'CAT_SKINCARE':
-        return <CategoryPage categoryName="Botanical Care" categorySlug="skin-care" onBack={() => setCurrentView('SHOP')} onAddToCart={() => { }} />;
+        return <CategoryPage {...catProps('Botanical Care', 'skin-care')} />;
       case 'CAT_GROCERIES':
-        return <CategoryPage categoryName="Curated Pantry" categorySlug="groceries" onBack={() => setCurrentView('SHOP')} onAddToCart={() => { }} />;
+        return <CategoryPage {...catProps('Curated Pantry', 'groceries')} />;
+      case 'ABOUT':
+        return <AboutPage onBack={() => setCurrentView('SHOP')} />;
+      case 'ACCOUNT':
+        return (
+          <AccountPage
+            user={user}
+            onBack={() => setCurrentView('SHOP')}
+            onUpdateUser={setUser}
+            onNavigate={(view) => setCurrentView(view as ViewType)}
+          />
+        );
       case 'TRADE_GATE':
         return <WholesaleGate onApplyBuyer={() => setCurrentView('APPLY_BUYER')} onApplySupplier={() => setCurrentView('APPLY_SUPPLIER')} onLoginAsAdmin={() => {
           setUser({ id: 'admin_1', name: 'Grand Curator', role: UserRole.ADMIN, status: ApplicationStatus.APPROVED });
           setCurrentView('ADMIN');
+        }} />;
+      case 'APPLY_BUYER':
+        return <ApplicationForm type="BUYER" onCancel={() => setCurrentView('TRADE_GATE')} onSuccess={() => {
+          setUser(prev => ({ ...prev, status: ApplicationStatus.PENDING }));
+          setCurrentView('TRADE_GATE');
+        }} />;
+      case 'APPLY_SUPPLIER':
+        return <ApplicationForm type="SUPPLIER" onCancel={() => setCurrentView('TRADE_GATE')} onSuccess={() => {
+          setUser(prev => ({ ...prev, status: ApplicationStatus.PENDING }));
+          setCurrentView('TRADE_GATE');
         }} />;
       case 'TRADE_DASHBOARD':
         return <B2BDashboard role={user.role} />;
@@ -153,6 +265,7 @@ const App: React.FC = () => {
         onModeToggle={handleModeToggle}
         setView={setCurrentView}
         wishlistCount={wishlist.length}
+        cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)}
       />
 
       <main className="container mx-auto px-6 py-12 max-w-7xl flex-1 animate-fade-in relative">

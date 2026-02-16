@@ -18,6 +18,8 @@ import {
     ReviewResponseBody,
     UpdateVerificationBody,
     UpdateStatusBody,
+    CreateProductBody,
+    UpdateProductBody,
 } from './schemas';
 
 // ============================================
@@ -276,6 +278,275 @@ export async function getSupplierProducts(req: Request, res: Response, next: Nex
                 },
             },
         });
+    } catch (error) {
+        next(error);
+    }
+}
+
+/**
+ * GET /api/suppliers/:id/products
+ * Returns paginated supplier products
+ */
+export async function getSupplierProducts(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { id } = req.params;
+        const { page, limit, category, sort } = req.query as unknown as GetProductsQuery;
+
+        const offset = (page - 1) * limit;
+
+        // Build sort clause
+        const sortMap: Record<string, string> = {
+            popular: 'total_orders DESC',
+            recent: 'created_at DESC',
+            price_low: 'price_min ASC NULLS LAST',
+            price_high: 'price_max DESC NULLS LAST',
+        };
+        const orderBy = sortMap[sort] || 'total_orders DESC';
+
+        // Build query with optional category filter
+        let whereClause = 'supplier_id = $1 AND is_active = TRUE';
+        const params: (string | number)[] = [id];
+
+        if (category) {
+            whereClause += ' AND category_id = $2';
+            params.push(category);
+        }
+
+        // Get total count
+        const countResult = await pool.query(
+            `SELECT COUNT(*) FROM supplier_products WHERE ${whereClause}`,
+            params
+        );
+        const total = parseInt(countResult.rows[0].count);
+
+        // Get products
+        const productsResult = await pool.query(`
+            SELECT
+                p.id, p.name, p.name_ar, p.name_fr, p.slug, p.description,
+                p.image_url, p.price_min, p.price_max, p.currency, p.moq,
+                p.total_orders, p.is_featured, p.created_at,
+                c.name as category_name, c.id as category_id
+            FROM supplier_products p
+            LEFT JOIN categories c ON c.id = p.category_id
+            WHERE p.${whereClause}
+            ORDER BY p.${orderBy}
+            LIMIT $${params.length + 1} OFFSET $${params.length + 2}
+        `, [...params, limit, offset]);
+
+        res.json({
+            success: true,
+            data: {
+                products: productsResult.rows.map(p => ({
+                    id: p.id,
+                    name: p.name,
+                    nameAr: p.name_ar,
+                    nameFr: p.name_fr,
+                    slug: p.slug,
+                    description: p.description,
+                    image: p.image_url,
+                    price: {
+                        min: parseFloat(p.price_min) || 0,
+                        max: parseFloat(p.price_max) || 0,
+                        currency: p.currency,
+                    },
+                    moq: p.moq,
+                    orders: p.total_orders,
+                    isFeatured: p.is_featured,
+                    category: {
+                        id: p.category_id,
+                        name: p.category_name,
+                    },
+                    createdAt: p.created_at,
+                })),
+                pagination: {
+                    page,
+                    limit,
+                    total,
+                    totalPages: Math.ceil(total / limit),
+                },
+            },
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+/**
+ * GET /api/suppliers/:supplierId/products/:productId
+ * Returns a single product by ID
+ */
+export async function getProductById(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { supplierId, productId } = req.params;
+
+        const productResult = await pool.query(`
+            SELECT
+                p.id, p.name, p.name_ar, p.name_fr, p.slug, p.description,
+                p.image_url, p.price_min, p.price_max, p.currency, p.moq,
+                p.total_orders, p.is_featured, p.is_active, p.created_at, p.updated_at,
+                c.name as category_name, c.id as category_id
+            FROM supplier_products p
+            LEFT JOIN categories c ON c.id = p.category_id
+            WHERE p.id = $1 AND p.supplier_id = $2
+        `, [productId, supplierId]);
+
+        if (productResult.rows.length === 0) {
+            throw new AppError('Product not found', 404);
+        }
+
+        const p = productResult.rows[0];
+        res.json({
+            success: true,
+            data: {
+                id: p.id,
+                name: p.name,
+                nameAr: p.name_ar,
+                nameFr: p.name_fr,
+                slug: p.slug,
+                description: p.description,
+                image: p.image_url,
+                price: {
+                    min: parseFloat(p.price_min) || 0,
+                    max: parseFloat(p.price_max) || 0,
+                    currency: p.currency,
+                },
+                moq: p.moq,
+                orders: p.total_orders,
+                isFeatured: p.is_featured,
+                isActive: p.is_active,
+                category: {
+                    id: p.category_id,
+                    name: p.category_name,
+                },
+                createdAt: p.created_at,
+                updatedAt: p.updated_at,
+            },
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+/**
+ * POST /api/suppliers/:supplierId/products
+ * Create a new product for the supplier
+ */
+export async function createProduct(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { supplierId } = req.params;
+        const userId = req.user!.id;
+        const body = req.body as CreateProductBody;
+
+        if (!(await checkSupplierOwnership(supplierId, userId))) {
+            throw new AppError('You can only add products to your own supplier profile', 403);
+        }
+
+        // Basic slug generation (can be enhanced with a utility)
+        const slug = body.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-*|-*$/g, '');
+
+        const result = await pool.query(`
+            INSERT INTO supplier_products (
+                supplier_id, name, name_ar, name_fr, slug, description, image_url,
+                price_min, price_max, currency, moq, category_id, is_featured, is_active
+            )
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+            RETURNING id, created_at
+        `, [
+            supplierId, body.name, body.nameAr || null, body.nameFr || null, slug, body.description || null,
+            body.imageUrl || null, body.priceMin || null, body.priceMax || null, body.currency || 'USD',
+            body.moq || 1, body.categoryId || null, body.isFeatured || false, body.isActive || true
+        ]);
+
+        res.status(201).json({
+            success: true,
+            data: {
+                id: result.rows[0].id,
+                createdAt: result.rows[0].created_at,
+            },
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+/**
+ * PUT /api/suppliers/:supplierId/products/:productId
+ * Update an existing product for the supplier
+ */
+export async function updateProduct(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { supplierId, productId } = req.params;
+        const userId = req.user!.id;
+        const body = req.body as UpdateProductBody;
+
+        if (!(await checkSupplierOwnership(supplierId, userId))) {
+            throw new AppError('You can only update products on your own supplier profile', 403);
+        }
+
+        // Build dynamic update query
+        const updates: string[] = [];
+        const values: any[] = [];
+        let paramIndex = 1;
+
+        const fieldMap: Record<string, string> = {
+            name: 'name',
+            nameAr: 'name_ar',
+            nameFr: 'name_fr',
+            description: 'description',
+            imageUrl: 'image_url',
+            priceMin: 'price_min',
+            priceMax: 'price_max',
+            currency: 'currency',
+            moq: 'moq',
+            categoryId: 'category_id',
+            isFeatured: 'is_featured',
+            isActive: 'is_active',
+        };
+
+        for (const [key, column] of Object.entries(fieldMap)) {
+            if (body[key as keyof UpdateProductBody] !== undefined) {
+                updates.push(`${column} = $${paramIndex}`);
+                values.push(body[key as keyof UpdateProductBody]);
+                paramIndex++;
+            }
+        }
+
+        if (updates.length === 0) {
+            return res.json({ success: true, message: 'No updates provided' });
+        }
+
+        values.push(productId);
+        values.push(supplierId);
+        await pool.query(
+            `UPDATE supplier_products SET ${updates.join(', ')}, updated_at = NOW() WHERE id = $${paramIndex} AND supplier_id = $${paramIndex + 1}`,
+            values
+        );
+
+        res.json({ success: true });
+    } catch (error) {
+        next(error);
+    }
+}
+
+/**
+ * DELETE /api/suppliers/:supplierId/products/:productId
+ * Delete a product for the supplier
+ */
+export async function deleteProduct(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { supplierId, productId } = req.params;
+        const userId = req.user!.id;
+
+        if (!(await checkSupplierOwnership(supplierId, userId))) {
+            throw new AppError('You can only delete products from your own supplier profile', 403);
+        }
+
+        await pool.query(
+            'DELETE FROM supplier_products WHERE id = $1 AND supplier_id = $2',
+            [productId, supplierId]
+        );
+
+        res.json({ success: true });
     } catch (error) {
         next(error);
     }
