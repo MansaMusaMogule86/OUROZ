@@ -24,13 +24,13 @@ const ChefAtelier: React.FC<ChefAtelierProps> = ({ onBack, wishlist, onToggleVau
         </div>
       </div>
 
-      <div className="relative rounded-[64px] overflow-hidden bg-emerald h-[650px] shadow-luxury group border border-emerald/20 mx-2">
+      <div className="relative rounded-[64px] overflow-hidden bg-emerald min-h-[650px] h-auto shadow-luxury group border border-emerald/20 mx-2 pb-12">
         <img
-          src="https://images.unsplash.com/photo-1590593162201-f67611a18b87?auto=format&fit=crop&q=80&w=2070"
-          className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-[4s]"
+          src="https://images.unsplash.com/photo-1590593162201-f67611a18b87?auto=format&fit=crop&q=80&w=2070&v=99"
+          className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-[4s]"
           alt="Chef Adafer Atelier"
         />
-        <div className="absolute inset-0 flex flex-col justify-center items-center text-sahara text-center p-12 space-y-12 bg-black/40">
+        <div className="relative z-10 flex flex-col justify-center items-center text-sahara text-center p-12 space-y-12 bg-black/40 min-h-[650px]">
           <span className="heading-vogue text-[12px] opacity-70 tracking-[1em]">The Michelin Sanctuary</span>
           <h1 className="text-9xl md:text-[11rem] font-serif font-light leading-none">Chef <span className="italic text-gold">ADAFER</span></h1>
           <p className="text-3xl max-w-3xl font-serif font-light italic leading-relaxed opacity-90 text-shadow-sm">
