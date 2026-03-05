@@ -19,3 +19,9 @@ This journal tracks critical learnings and performance patterns specific to the 
 Should be wrapped with `React.memo()` to prevent unnecessary re-renders.
 
 ---
+
+## 2026-02-23 - Memoizing list item cards in Order Management
+
+**Learning:** In `OrderManagement.tsx`, passing an inline function `onClick={() => setSelectedOrder(order)}` to list items negated the benefits of wrapping `OrderCard` with `React.memo`, since inline functions create a new reference on every parent render. This caused all cards to unnecessarily re-render on keystrokes in the search bar.
+
+**Action:** When memoizing list item components, pass the state setter directly (e.g., `onSelect={setSelectedOrder}`) as it's a stable reference from `useState`. Also, compute any expensive state needed for rendering loops (e.g., `filteredOrders`) inside a `useMemo` block so parent state changes (like typing in a search bar) do not trigger unnecessary array filtering.
