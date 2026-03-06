@@ -1,33 +1,98 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-
-  /* OUROZ Brand Palette */
-  --color-sahara: #F5F0E8;
+/* ⵣ OUROZ Sovereign Palette Configuration */
+@theme {
+  /* Brand colors — for Tailwind v4 utility classes:
+     bg-sahara, text-charcoal, border-imperial, etc. */
+  --color-sahara: #F5E6D3;
+  --color-charcoal: #1A1A1A;
+  --color-imperial: #9B1B30;
+  --color-zellige: #006644;
   --color-gold: #D4AF37;
-  --color-charcoal: #2C2C2C;
-  --color-zellige: #C1440E;
-  --color-imperial: #1B3A4B;
+
+  /* Serif font — for headings and brand elements (font-serif class) */
+  --font-serif: "Playfair Display", serif;
+
+  /* Sans font — loaded by next/font in layout.tsx (Geist).
+     Do NOT redefine --font-sans here; the layout injects it via
+     CSS variable so next/font handles loading + font-display. */
 }
 
+/* Base Styles */
+:root {
+  --background: var(--color-sahara);
+  --foreground: var(--color-charcoal);
+}
+
+/* Lock dark mode — OUROZ stays Sahara Sand for luxury consistency */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: var(--color-sahara);
+    --foreground: var(--color-charcoal);
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+  transition: background-color 0.5s ease;
+}
+
+/* ── Custom Utilities ─────────────────────────────────────────────── */
+
+/* Sovereign Glass effect */
+@utility glass-pillar {
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.02);
+}
+
+/* Gold Shimmer for Yaz Symbol ⵣ */
+@utility gold-shimmer {
+  background: linear-gradient(90deg,
+      rgba(212, 175, 55, 0) 0%,
+      rgba(212, 175, 55, 0.4) 50%,
+      rgba(212, 175, 55, 0) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite linear;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Thin scrollbar */
+@utility scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-charcoal) transparent;
 }

@@ -50,8 +50,20 @@ Open <http://localhost:3000> in your browser.
 
 ## Architecture
 
-- **Frontend**: React 19 + Vite + Tailwind CSS
-- **Backend**: Express.js proxy server (keeps API key secure)
+- **Frontend**: Next.js App Router + React 19 + Tailwind CSS
+- **Backend**: Supabase (Postgres + Auth + Storage) and route handlers
 - **AI**: Google Gemini (images, video, voice, chat)
 
-The backend proxy ensures your API key is never exposed to the browser.
+## Quick Health Check
+
+After starting dev server, run:
+
+```bash
+npm run smoke
+```
+
+If your app is on a different port:
+
+```bash
+BASE_URL=http://localhost:3001 npm run smoke
+```

@@ -7,15 +7,15 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 // Lazy load pages for code splitting
-const LandingPage = lazy(() => import('./pages/LandingPage'));
-const BuyerMarketplace = lazy(() => import('./pages/BuyerMarketplace'));
-const SupplierDashboard = lazy(() => import('./pages/SupplierDashboard'));
-const SupplierProfile = lazy(() => import('./pages/SupplierProfile'));
-const ProductDetail = lazy(() => import('./pages/ProductDetail'));
-const RFQSystem = lazy(() => import('./pages/RFQSystem'));
-const MessagingSystem = lazy(() => import('./pages/MessagingSystem'));
-const OrderManagement = lazy(() => import('./pages/OrderManagement'));
-const Checkout = lazy(() => import('./pages/Checkout'));
+const LandingPage = lazy(() => import('./legacy-pages/LandingPage'));
+const BuyerMarketplace = lazy(() => import('./legacy-pages/BuyerMarketplace'));
+const SupplierDashboard = lazy(() => import('./legacy-pages/SupplierDashboard'));
+const SupplierProfile = lazy(() => import('./legacy-pages/SupplierProfile'));
+const ProductDetail = lazy(() => import('./legacy-pages/ProductDetail'));
+const RFQSystem = lazy(() => import('./legacy-pages/RFQSystem'));
+const MessagingSystem = lazy(() => import('./legacy-pages/MessagingSystem'));
+const OrderManagement = lazy(() => import('./legacy-pages/OrderManagement'));
+const Checkout = lazy(() => import('./legacy-pages/Checkout'));
 
 // Loading component
 const PageLoader: React.FC = () => (

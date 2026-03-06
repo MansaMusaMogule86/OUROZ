@@ -116,6 +116,8 @@ export type ViewType =
   // Additional Views
   | 'PRODUCT_DETAIL'
   | 'CART'
+  | 'CHECKOUT'
+  | 'ORDER_SUCCESS'
   | 'ABOUT'
   | 'ACCOUNT';
 

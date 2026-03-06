@@ -12,6 +12,7 @@ interface CartPageProps {
   onUpdateQuantity: (productId: string, quantity: number) => void;
   onRemoveItem: (productId: string) => void;
   onClearCart: () => void;
+  onCheckout: () => void;
   onContinueShopping: () => void;
   onViewProduct: (product: Product) => void;
 }
@@ -21,6 +22,7 @@ const CartPage: React.FC<CartPageProps> = ({
   onUpdateQuantity,
   onRemoveItem,
   onClearCart,
+  onCheckout,
   onContinueShopping,
   onViewProduct
 }) => {
@@ -151,7 +153,7 @@ const CartPage: React.FC<CartPageProps> = ({
               </span>
             </div>
 
-            <button className="w-full py-5 bg-henna text-white rounded-full heading-vogue text-[11px] tracking-[0.4em] hover:bg-majorelle transition-all shadow-luxury active:scale-[0.98]">
+            <button onClick={onCheckout} className="w-full py-5 bg-henna text-white rounded-full heading-vogue text-[11px] tracking-[0.4em] hover:bg-majorelle transition-all shadow-luxury active:scale-[0.98]">
               Proceed to Checkout
             </button>
 

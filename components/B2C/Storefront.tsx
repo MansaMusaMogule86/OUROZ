@@ -7,9 +7,11 @@ interface StorefrontProps {
   wishlist: Product[];
   onToggleWishlist: (product: Product) => void;
   onNavigateToCategory: (slug: string) => void;
+  onViewProduct: (product: Product) => void;
+  onAddToCart: (product: Product, qty?: number) => void;
 }
 
-const B2CStorefront: React.FC<StorefrontProps> = ({ wishlist, onToggleWishlist, onNavigateToCategory }) => {
+const B2CStorefront: React.FC<StorefrontProps> = ({ wishlist, onToggleWishlist, onNavigateToCategory, onViewProduct, onAddToCart }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [showWishlistOnly, setShowWishlistOnly] = useState(false);
@@ -125,6 +127,8 @@ const B2CStorefront: React.FC<StorefrontProps> = ({ wishlist, onToggleWishlist, 
             key={product.id}
             product={product} 
             onAdd={() => onToggleWishlist(product)} 
+            onAddToCart={() => onAddToCart(product, 1)}
+            onView={() => onViewProduct(product)}
             isInAmud={isInAmud(product.id)}
           />
         ))}
@@ -136,10 +140,12 @@ const B2CStorefront: React.FC<StorefrontProps> = ({ wishlist, onToggleWishlist, 
 const ArtifactCard: React.FC<{ 
   product: Product; 
   onAdd: () => void;
+  onAddToCart: () => void;
+  onView: () => void;
   isInAmud: boolean;
-}> = ({ product, onAdd, isInAmud }) => (
+}> = ({ product, onAdd, onAddToCart, onView, isInAmud }) => (
   <div className="group card-vogue bg-white/40 glass-vogue overflow-hidden hover:-translate-y-8 shadow-gold-ambient border-gold/10 hover:border-gold/50 flex flex-col h-full active:scale-[0.98]">
-    <div className="relative h-[500px] overflow-hidden shrink-0 bg-sahara/50">
+    <div className="relative h-[500px] overflow-hidden shrink-0 bg-sahara/50 cursor-pointer" onClick={onView}>
       <img src={product.image} className="w-full h-full object-cover grayscale-[0.3] contrast-125 transition-all duration-1000 group-hover:scale-110 group-hover:grayscale-0" alt={product.name} />
       <div className="absolute inset-0 bg-henna/0 group-hover:bg-henna/10 transition-all duration-700 flex items-center justify-center opacity-0 group-hover:opacity-100">
          <button onClick={onAdd} className="px-10 py-5 bg-sahara text-henna rounded-full shadow-luxury heading-vogue text-[10px] hover:bg-gold hover:text-white transition-all transform hover:scale-110">
@@ -163,9 +169,14 @@ const ArtifactCard: React.FC<{
       
       <div className="flex items-center justify-between mt-auto pt-10 border-t border-gold/10">
         <span className="heading-vogue text-3xl text-henna tracking-tighter">{product.price.toFixed(0)} <span className="text-[10px] font-sans text-gold uppercase tracking-[0.4em]">{product.currency}</span></span>
-        <button onClick={onAdd} className={`w-16 h-16 rounded-full flex items-center justify-center transition-all transform hover:scale-125 active:scale-90 shadow-luxury ${isInAmud ? 'bg-majorelle text-white' : 'bg-henna text-white hover:bg-majorelle'}`}>
-           <span className="text-2xl font-serif">ⵣ</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <button onClick={onAdd} className={`w-14 h-14 rounded-full flex items-center justify-center transition-all transform hover:scale-110 active:scale-90 shadow-luxury ${isInAmud ? 'bg-majorelle text-white' : 'bg-henna text-white hover:bg-majorelle'}`}>
+            <span className="text-xl font-serif">ⵣ</span>
+          </button>
+          <button onClick={onAddToCart} className="px-5 py-3 rounded-full bg-gold/90 text-white text-[10px] font-black tracking-[0.2em] uppercase hover:bg-henna transition-all shadow-luxury">
+            Add
+          </button>
+        </div>
       </div>
     </div>
   </div>

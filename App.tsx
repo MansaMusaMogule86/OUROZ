@@ -1,32 +1,35 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { UserRole, User, ApplicationStatus, Product, ViewType } from './types';
 import Navigation from './components/Navigation';
-import LandingPage from './components/LandingPage';
-import WholesaleGate from './components/WholesaleGate';
-import ApplicationForm from './components/ApplicationForm';
-import AdminDashboard from './components/Admin/AdminDashboard';
-import B2BDashboard from './components/B2B/Dashboard';
-import B2CStorefront from './components/B2C/Storefront';
-import ProductDetailPage from './components/B2C/ProductDetailPage';
-import CartPage, { CartItem } from './components/B2C/CartPage';
-import VoiceSupport from './components/VoiceSupport';
-import AIStudio from './components/AI/AIStudio';
-import Assistant from './components/AI/Assistant';
-import CategoryPage from './components/Categories/CategoryPage';
-import ChefAtelier from './components/ChefAtelier';
-import AboutPage from './components/AboutPage';
-import AccountPage from './components/AccountPage';
+import type { CartItem } from './components/B2C/CartPage';
 
 // B2B Marketplace Pages
-import BuyerMarketplace from './src/pages/BuyerMarketplace';
-import SupplierDashboard from './src/pages/SupplierDashboard';
-import SupplierProfile from './src/pages/SupplierProfile';
-import ProductDetail from './src/pages/ProductDetail';
-import RFQSystem from './src/pages/RFQSystem';
-import MessagingSystem from './src/pages/MessagingSystem';
-import OrderManagement from './src/pages/OrderManagement';
-import Checkout from './src/pages/Checkout';
+const LandingPage = lazy(() => import('./components/LandingPage'));
+const WholesaleGate = lazy(() => import('./components/WholesaleGate'));
+const ApplicationForm = lazy(() => import('./components/ApplicationForm'));
+const AdminDashboard = lazy(() => import('./components/Admin/AdminDashboard'));
+const B2BDashboard = lazy(() => import('./components/B2B/Dashboard'));
+const B2CStorefront = lazy(() => import('./components/B2C/Storefront'));
+const ProductDetailPage = lazy(() => import('./components/B2C/ProductDetailPage'));
+const CartPage = lazy(() => import('./components/B2C/CartPage'));
+const CheckoutPage = lazy(() => import('./components/B2C/CheckoutPage'));
+const OrderSuccessPage = lazy(() => import('./components/B2C/OrderSuccessPage'));
+const VoiceSupport = lazy(() => import('./components/VoiceSupport'));
+const AIStudio = lazy(() => import('./components/AI/AIStudio'));
+const Assistant = lazy(() => import('./components/AI/Assistant'));
+const CategoryPage = lazy(() => import('./components/Categories/CategoryPage'));
+const ChefAtelier = lazy(() => import('./components/ChefAtelier'));
+const AboutPage = lazy(() => import('./components/AboutPage'));
+const AccountPage = lazy(() => import('./components/AccountPage'));
+const BuyerMarketplace = lazy(() => import('./src/legacy-pages/BuyerMarketplace'));
+const SupplierDashboard = lazy(() => import('./src/legacy-pages/SupplierDashboard'));
+const SupplierProfile = lazy(() => import('./src/legacy-pages/SupplierProfile'));
+const ProductDetail = lazy(() => import('./src/legacy-pages/ProductDetail'));
+const RFQSystem = lazy(() => import('./src/legacy-pages/RFQSystem'));
+const MessagingSystem = lazy(() => import('./src/legacy-pages/MessagingSystem'));
+const OrderManagement = lazy(() => import('./src/legacy-pages/OrderManagement'));
+const Checkout = lazy(() => import('./src/legacy-pages/Checkout'));
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<ViewType>('LANDING');
@@ -54,6 +57,7 @@ const App: React.FC = () => {
   });
 
   const [lastAddedId, setLastAddedId] = useState<string | null>(null);
+  const [lastOrderId, setLastOrderId] = useState<string>('');
 
   useEffect(() => {
     localStorage.setItem('ouroz_amud_vault', JSON.stringify(wishlist));
@@ -139,7 +143,7 @@ const App: React.FC = () => {
       case 'LANDING':
         return <LandingPage onShop={() => handleModeToggle('RETAIL')} onTrade={() => handleModeToggle('WHOLESALE')} />;
       case 'SHOP':
-        return <B2CStorefront wishlist={wishlist} onToggleWishlist={toggleAmudVault} onNavigateToCategory={(slug) => {
+        return <B2CStorefront wishlist={wishlist} onToggleWishlist={toggleAmudVault} onAddToCart={addToCart} onViewProduct={handleViewProduct} onNavigateToCategory={(slug) => {
           const catMap: Record<string, ViewType> = {
             'kitchen-accessories': 'CAT_KITCHEN',
             'clothing': 'CAT_CLOTHING',
@@ -160,7 +164,7 @@ const App: React.FC = () => {
             onViewProduct={handleViewProduct}
           />
         ) : (
-          <B2CStorefront wishlist={wishlist} onToggleWishlist={toggleAmudVault} onNavigateToCategory={() => {}} />
+          <B2CStorefront wishlist={wishlist} onToggleWishlist={toggleAmudVault} onAddToCart={addToCart} onViewProduct={handleViewProduct} onNavigateToCategory={() => {}} />
         );
       case 'CART':
         return (
@@ -169,8 +173,29 @@ const App: React.FC = () => {
             onUpdateQuantity={updateCartQuantity}
             onRemoveItem={removeFromCart}
             onClearCart={clearCart}
+            onCheckout={() => setCurrentView('CHECKOUT')}
             onContinueShopping={() => setCurrentView('SHOP')}
             onViewProduct={handleViewProduct}
+          />
+        );
+      case 'CHECKOUT':
+        return (
+          <CheckoutPage
+            items={cart}
+            onBack={() => setCurrentView('CART')}
+            onPlaceOrder={() => {
+              const orderId = `ORD-${Date.now().toString().slice(-8)}`;
+              setLastOrderId(orderId);
+              clearCart();
+              setCurrentView('ORDER_SUCCESS');
+            }}
+          />
+        );
+      case 'ORDER_SUCCESS':
+        return (
+          <OrderSuccessPage
+            orderId={lastOrderId || 'ORD-PENDING'}
+            onContinueShopping={() => setCurrentView('SHOP')}
           />
         );
       case 'CHEF_ADAFER':
@@ -269,7 +294,9 @@ const App: React.FC = () => {
       />
 
       <main className="container mx-auto px-6 py-12 max-w-7xl flex-1 animate-fade-in relative">
-        {renderContent()}
+        <Suspense fallback={<div className="py-20 text-center text-stone-500">Loading...</div>}>
+          {renderContent()}
+        </Suspense>
       </main>
 
       {/* AMUD Vault Icon (Floating Cart Proxy) */}

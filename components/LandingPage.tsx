@@ -8,98 +8,148 @@ interface LandingPageProps {
 
 const LandingPage: React.FC<LandingPageProps> = ({ onShop, onTrade }) => {
   return (
-    <div className="pt-32 pb-32 flex flex-col items-center animate-fade-in space-y-40 bg-sahara">
-      {/* Editorial Hero with Authentic Logo */}
-      <div className="text-center space-y-16 max-w-6xl animate-slide-up relative">
-        <div className="flex justify-center mb-12">
+    <div className="min-h-[calc(100vh-6rem)] flex flex-col items-center justify-center bg-sahara relative overflow-hidden">
+
+      {/* Hero Section - Centered Editorial Layout */}
+      <div className="text-center space-y-10 max-w-5xl px-6 animate-fade-in relative z-10">
+
+        {/* Amazigh Logo Mark */}
+        <div className="flex justify-center mb-6">
           <div className="relative group">
-            {/* The Gemini-style rotating gold shimmer - strictly burnished gold */}
-            <div className="absolute -inset-10 yaz-shimmer-ring rounded-full opacity-40 blur-xl animate-yaz-rotate pointer-events-none"></div>
-            
-            {/* Logo Container: Imperial Red with Gold Frame */}
-            <div className="relative w-52 h-52 yaz-enamel border-4 border-gold rounded-full flex items-center justify-center shadow-2xl transition-transform duration-1000 group-hover:scale-105">
-              <span className="text-sahara text-[7.5rem] font-serif select-none leading-none drop-shadow-lg">ⵣ</span>
-            </div>
-            
-            <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-henna text-sahara px-10 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.5em] shadow-2xl border border-gold/20 z-10">
-              VERIFIED LINEAGE
+            {/* Shimmer ring behind logo */}
+            <div className="absolute -inset-8 yaz-shimmer-ring rounded-full opacity-30 blur-xl animate-yaz-rotate pointer-events-none"></div>
+
+            {/* Logo circle with soft gradient */}
+            <div className="relative w-40 h-40 rounded-full bg-gradient-to-b from-white/80 to-white/40 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.08)] flex items-center justify-center border border-gold/10 transition-transform duration-1000 group-hover:scale-105">
+              <span className="text-[6rem] leading-none select-none" style={{
+                background: 'linear-gradient(180deg, #C85A5A 0%, #A63D3D 40%, #8B1A4A 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontFamily: 'Playfair Display, serif'
+              }}>ⵣ</span>
             </div>
           </div>
         </div>
-        
-        <div className="space-y-6">
-          <h1 className="text-8xl md:text-[13rem] font-serif font-light text-henna leading-[0.75] tracking-[-0.05em]">
+
+        {/* Brand Title */}
+        <div className="space-y-4">
+          <h1 className="text-7xl md:text-[10rem] font-serif font-light text-henna leading-[0.8] tracking-[-0.04em]">
             OUROZ
           </h1>
-          <p className="text-2xl md:text-3xl font-serif italic text-gold font-light tracking-[0.2em]">
+          <p className="text-lg md:text-xl font-serif italic text-gold/70 font-light tracking-[0.25em] uppercase">
             The Amazigh Source
           </p>
         </div>
 
-        <p className="text-2xl md:text-3xl text-henna/40 font-serif font-light italic leading-relaxed max-w-3xl mx-auto border-y border-gold/10 py-12 px-6">
-          Where ancient Berber craftsmanship finds its modern velocity. A trade bridge for the few, verified by the source.
-        </p>
+        {/* Main Tagline - from Screenshot 1 */}
+        <div className="max-w-3xl mx-auto space-y-4 pt-4">
+          <h2 className="text-2xl md:text-4xl font-serif font-light text-henna/80 leading-snug tracking-wide">
+            Authentic Moroccan Products,<br />Delivered in Dubai
+          </h2>
+          <p className="text-base md:text-lg text-henna/40 font-light leading-relaxed max-w-2xl mx-auto">
+            From the souks of Morocco to your doorstep. Fresh spices, artisan goods, and traditional delicacies.
+          </p>
+        </div>
 
-        <div className="flex gap-12 justify-center pt-8">
-           <div className="text-[10px] font-black uppercase tracking-[0.5em] text-gold/40 border-b border-gold/20 pb-2">Verified Origins</div>
-           <div className="text-[10px] font-black uppercase tracking-[0.5em] text-gold/40 border-b border-gold/20 pb-2">Direct Logistics</div>
-           <div className="text-[10px] font-black uppercase tracking-[0.5em] text-gold/40 border-b border-gold/20 pb-2">AI Verification</div>
+        {/* CTA Buttons - Screenshot 2 Style */}
+        <div className="flex flex-col sm:flex-row gap-6 justify-center pt-6 max-w-xl mx-auto">
+          <button
+            onClick={onShop}
+            className="flex-1 py-5 px-10 border-2 border-henna/20 text-henna rounded-full font-sans font-black text-[11px] uppercase tracking-[0.4em] hover:bg-henna hover:text-sahara transition-all duration-500 hover:border-henna hover:shadow-xl active:scale-95"
+          >
+            Shop Now
+          </button>
+          <button
+            onClick={onTrade}
+            className="flex-1 py-5 px-10 bg-henna text-sahara rounded-full font-sans font-black text-[11px] uppercase tracking-[0.4em] hover:bg-henna/90 transition-all duration-500 hover:shadow-xl active:scale-95"
+          >
+            Wholesale Pricing
+          </button>
+        </div>
+
+        {/* Bottom Labels - Screenshot 2 Style */}
+        <div className="flex gap-10 md:gap-16 justify-center pt-10">
+          <div className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-gold/40 border-b border-gold/15 pb-2 hover:text-gold/70 transition-colors cursor-default">
+            Verified Lineage
+          </div>
+          <div className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-gold/40 border-b border-gold/15 pb-2 hover:text-gold/70 transition-colors cursor-default">
+            Direct Logistics
+          </div>
+          <div className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-gold/40 border-b border-gold/15 pb-2 hover:text-gold/70 transition-colors cursor-default">
+            Sourcing Branding
+          </div>
         </div>
       </div>
 
-      {/* Path Selection Cards - Structural Overhaul */}
-      <div className="grid md:grid-cols-2 gap-16 w-full max-w-7xl px-4">
-        {/* Retail Path - The Curator (Atlas Indigo) */}
-        <div 
-          onClick={onShop}
-          className="group relative overflow-hidden rounded-extreme bg-white/10 glass-vogue p-24 flex flex-col items-center text-center transition-all duration-1000 hover:-translate-y-8 hover:shadow-luxury cursor-pointer border border-gold/30"
-        >
-          <div className="absolute inset-0 bg-indigo/[0.02] group-hover:bg-indigo/[0.05] transition-colors"></div>
-          <div className="w-28 h-28 bg-sahara rounded-full flex items-center justify-center text-6xl mb-12 shadow-inner border border-gold/10 group-hover:rotate-12 transition-transform duration-700">🏺</div>
-          <h2 className="text-7xl font-serif font-light mb-8 text-henna tracking-vogue">The Curator</h2>
-          <p className="text-henna/50 mb-14 flex-1 text-2xl font-serif font-light leading-relaxed italic">
-            Direct access to the rare, the hand-thrown, and the botanically pure. Curated artifacts for the modern sanctuary.
-          </p>
-          <button className="w-full py-8 bg-indigo text-sahara rounded-full font-black text-[11px] uppercase tracking-[0.5em] shadow-2xl shadow-indigo/20 hover:scale-[1.02] transition-all transform active:scale-95">
-            Access Collective
-          </button>
+      {/* Why OUROZ Section - Below fold, matching Screenshot 2 aesthetic */}
+      <div className="w-full max-w-6xl px-6 pt-40 pb-24 relative z-10">
+        <div className="text-center mb-20">
+          <h2 className="text-3xl md:text-5xl font-serif font-light text-henna tracking-wide">
+            Why OUROZ?
+          </h2>
+          <div className="w-16 h-px bg-gold/30 mx-auto mt-6"></div>
         </div>
 
-        {/* Wholesale Path - The Syndicate (Burnished Gold) */}
-        <div 
-          onClick={onTrade}
-          className="group relative overflow-hidden rounded-extreme bg-henna p-24 flex flex-col items-center text-center transition-all duration-1000 hover:-translate-y-8 hover:shadow-luxury cursor-pointer border border-gold/40"
-        >
-          <div className="absolute inset-0 bg-gold/[0.03] group-hover:bg-gold/[0.08] transition-colors"></div>
-          <div className="w-28 h-28 bg-white/5 rounded-full flex items-center justify-center text-6xl mb-12 shadow-inner border border-gold/20 group-hover:-rotate-12 transition-transform duration-700">🚢</div>
-          <h2 className="text-7xl font-serif font-light mb-8 text-sahara tracking-vogue">The Syndicate</h2>
-          <p className="text-sahara/40 mb-14 flex-1 text-2xl font-serif font-light leading-relaxed italic">
-            Institutional volume trade with automated logistics and verified Amazigh lineage. Secure. Scalable. Sovereign.
-          </p>
-          <button className="w-full py-8 bg-gold text-sahara rounded-full font-black text-[11px] uppercase tracking-[0.5em] hover:scale-[1.02] transition-all transform active:scale-95 shadow-2xl shadow-gold/20">
-            Enter Syndicate Hub
-          </button>
+        <div className="grid md:grid-cols-3 gap-12 md:gap-16">
+          {/* Feature 1 */}
+          <div className="group text-center space-y-6 p-10 rounded-[2rem] bg-white/30 border border-gold/10 hover:border-gold/30 transition-all duration-700 hover:-translate-y-2 hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.06)]">
+            <div className="w-20 h-20 mx-auto rounded-full bg-sahara border border-gold/10 flex items-center justify-center text-4xl shadow-inner group-hover:scale-110 transition-transform duration-500">
+              🌿
+            </div>
+            <h3 className="text-lg font-serif font-light text-henna tracking-[0.15em] uppercase">
+              Direct from Morocco
+            </h3>
+            <p className="text-sm text-henna/40 font-light leading-relaxed">
+              Sourced directly from Moroccan artisans and cooperatives, ensuring authenticity and fair trade.
+            </p>
+          </div>
+
+          {/* Feature 2 */}
+          <div className="group text-center space-y-6 p-10 rounded-[2rem] bg-white/30 border border-gold/10 hover:border-gold/30 transition-all duration-700 hover:-translate-y-2 hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.06)]">
+            <div className="w-20 h-20 mx-auto rounded-full bg-sahara border border-gold/10 flex items-center justify-center text-4xl shadow-inner group-hover:scale-110 transition-transform duration-500">
+              🚚
+            </div>
+            <h3 className="text-lg font-serif font-light text-henna tracking-[0.15em] uppercase">
+              Fast Dubai Delivery
+            </h3>
+            <p className="text-sm text-henna/40 font-light leading-relaxed">
+              Same-day and next-day delivery across all Emirates. Fresh products guaranteed.
+            </p>
+          </div>
+
+          {/* Feature 3 */}
+          <div className="group text-center space-y-6 p-10 rounded-[2rem] bg-white/30 border border-gold/10 hover:border-gold/30 transition-all duration-700 hover:-translate-y-2 hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.06)]">
+            <div className="w-20 h-20 mx-auto rounded-full bg-sahara border border-gold/10 flex items-center justify-center text-4xl shadow-inner group-hover:scale-110 transition-transform duration-500">
+              💎
+            </div>
+            <h3 className="text-lg font-serif font-light text-henna tracking-[0.15em] uppercase">
+              Wholesale & Retail
+            </h3>
+            <p className="text-sm text-henna/40 font-light leading-relaxed">
+              Competitive pricing for businesses. Tiered wholesale rates with credit terms for approved accounts.
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Luxury Footer Metrics */}
-      <div className="w-full max-w-6xl py-32 border-t border-gold/10 text-center animate-slide-up [animation-delay:0.6s]">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-20">
-          <div className="space-y-4">
-            <p className="text-8xl font-serif font-light text-henna tracking-tighter">800+</p>
-            <p className="text-[10px] text-gold font-black uppercase tracking-[0.6em] opacity-60">Verified Masters</p>
+      <div className="w-full max-w-6xl px-6 py-24 border-t border-gold/10 text-center">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-16">
+          <div className="space-y-3">
+            <p className="text-5xl md:text-7xl font-serif font-light text-henna tracking-tighter">800+</p>
+            <p className="text-[9px] text-gold font-black uppercase tracking-[0.5em] opacity-50">Verified Masters</p>
           </div>
-          <div className="space-y-4">
-            <p className="text-8xl font-serif font-light text-henna tracking-tighter">12</p>
-            <p className="text-[10px] text-gold font-black uppercase tracking-[0.6em] opacity-60">Logistics Hubs</p>
+          <div className="space-y-3">
+            <p className="text-5xl md:text-7xl font-serif font-light text-henna tracking-tighter">12</p>
+            <p className="text-[9px] text-gold font-black uppercase tracking-[0.5em] opacity-50">Logistics Hubs</p>
           </div>
-          <div className="space-y-4">
-            <p className="text-8xl font-serif font-light text-henna tracking-tighter">10ms</p>
-            <p className="text-[10px] text-gold font-black uppercase tracking-[0.6em] opacity-60">AI Verification</p>
+          <div className="space-y-3">
+            <p className="text-5xl md:text-7xl font-serif font-light text-henna tracking-tighter">10ms</p>
+            <p className="text-[9px] text-gold font-black uppercase tracking-[0.5em] opacity-50">AI Verification</p>
           </div>
-          <div className="space-y-4">
-            <p className="text-8xl font-serif font-light text-henna tracking-tighter">100%</p>
-            <p className="text-[10px] text-gold font-black uppercase tracking-[0.6em] opacity-60">Pure Lineage</p>
+          <div className="space-y-3">
+            <p className="text-5xl md:text-7xl font-serif font-light text-henna tracking-tighter">100%</p>
+            <p className="text-[9px] text-gold font-black uppercase tracking-[0.5em] opacity-50">Pure Lineage</p>
           </div>
         </div>
       </div>

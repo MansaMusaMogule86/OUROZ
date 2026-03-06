@@ -139,7 +139,10 @@ export const createProductBody = z.object({
     categoryId: z.string().uuid().optional(),
     isFeatured: z.boolean().optional().default(false),
     isActive: z.boolean().optional().default(true),
-}).refine(data => {
+}).refine((data: {
+    priceMin?: number;
+    priceMax?: number;
+}) => {
     if (data.priceMin && data.priceMax && data.priceMin > data.priceMax) {
         throw new Error("priceMin cannot be greater than priceMax");
     }
@@ -162,7 +165,10 @@ export const updateProductBody = z.object({
     categoryId: z.string().uuid().optional(),
     isFeatured: z.boolean().optional(),
     isActive: z.boolean().optional(),
-}).refine(data => {
+}).refine((data: {
+    priceMin?: number;
+    priceMax?: number;
+}) => {
     if (data.priceMin && data.priceMax && data.priceMin > data.priceMax) {
         throw new Error("priceMin cannot be greater than priceMax");
     }

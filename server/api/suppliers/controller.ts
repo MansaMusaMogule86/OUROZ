@@ -4,7 +4,7 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
-import { pool } from '../../db/connection';
+import { pool } from '../../db/connection.js';
 import { AppError } from '../../utils/errors';
 import {
     GetProductsQuery,
@@ -141,12 +141,12 @@ export async function getSupplierProfile(req: Request, res: Response, next: Next
             city: supplier.city,
             fullAddress: supplier.full_address,
 
-            exportCountries: exportCountriesResult.rows.map(r => r.country_code),
+            exportCountries: exportCountriesResult.rows.map((r: { country_code: string }) => r.country_code),
             exportExperience: supplier.export_experience_years,
             hasExportLicense: supplier.has_export_license,
             freeZoneCertified: supplier.free_zone_certified,
 
-            certifications: certificationsResult.rows.map(c => ({
+            certifications: certificationsResult.rows.map((c: { id: string; name: string; issuer: string; icon: string | null; is_verified: boolean }) => ({
                 id: c.id,
                 name: c.name,
                 issuer: c.issuer,
@@ -154,7 +154,7 @@ export async function getSupplierProfile(req: Request, res: Response, next: Next
                 isVerified: c.is_verified,
             })),
 
-            mainCategories: categoriesResult.rows.map(c => c.name),
+            mainCategories: categoriesResult.rows.map((c: { name: string }) => c.name),
             productCount: parseInt(supplier.product_count) || 0,
 
             responseRate: parseFloat(supplier.response_rate) || 0,
@@ -174,15 +174,24 @@ export async function getSupplierProfile(req: Request, res: Response, next: Next
 
             contactName: supplier.contact_name,
             contactTitle: supplier.contact_title,
-            languages: languagesResult.rows.map(l => l.language_name),
+            languages: languagesResult.rows.map((l: { language_name: string }) => l.language_name),
 
-            featuredProducts: featuredProductsResult.rows.map(p => ({
+            featuredProducts: featuredProductsResult.rows.map((p: {
+                id: string;
+                name: string;
+                image_url: string | null;
+                price_min: string | number | null;
+                price_max: string | number | null;
+                currency: string;
+                moq: number;
+                total_orders: number;
+            }) => ({
                 id: p.id,
                 name: p.name,
                 image: p.image_url,
                 price: {
-                    min: parseFloat(p.price_min) || 0,
-                    max: parseFloat(p.price_max) || 0,
+                    min: Number(p.price_min ?? 0) || 0,
+                    max: Number(p.price_max ?? 0) || 0,
                 },
                 currency: p.currency,
                 moq: p.moq,
@@ -241,90 +250,6 @@ export async function getSupplierProducts(req: Request, res: Response, next: Nex
                 p.id, p.name, p.name_ar, p.name_fr, p.slug, p.description,
                 p.image_url, p.price_min, p.price_max, p.currency, p.moq,
                 p.total_orders, p.is_featured, p.created_at,
-                c.name as category_name
-            FROM supplier_products p
-            LEFT JOIN categories c ON c.id = p.category_id
-            WHERE p.${whereClause}
-            ORDER BY p.${orderBy}
-            LIMIT $${params.length + 1} OFFSET $${params.length + 2}
-        `, [...params, limit, offset]);
-
-        res.json({
-            success: true,
-            data: {
-                products: productsResult.rows.map(p => ({
-                    id: p.id,
-                    name: p.name,
-                    nameAr: p.name_ar,
-                    nameFr: p.name_fr,
-                    slug: p.slug,
-                    description: p.description,
-                    image: p.image_url,
-                    price: {
-                        min: parseFloat(p.price_min) || 0,
-                        max: parseFloat(p.price_max) || 0,
-                        currency: p.currency,
-                    },
-                    moq: p.moq,
-                    orders: p.total_orders,
-                    isFeatured: p.is_featured,
-                    category: p.category_name,
-                })),
-                pagination: {
-                    page,
-                    limit,
-                    total,
-                    totalPages: Math.ceil(total / limit),
-                },
-            },
-        });
-    } catch (error) {
-        next(error);
-    }
-}
-
-/**
- * GET /api/suppliers/:id/products
- * Returns paginated supplier products
- */
-export async function getSupplierProducts(req: Request, res: Response, next: NextFunction) {
-    try {
-        const { id } = req.params;
-        const { page, limit, category, sort } = req.query as unknown as GetProductsQuery;
-
-        const offset = (page - 1) * limit;
-
-        // Build sort clause
-        const sortMap: Record<string, string> = {
-            popular: 'total_orders DESC',
-            recent: 'created_at DESC',
-            price_low: 'price_min ASC NULLS LAST',
-            price_high: 'price_max DESC NULLS LAST',
-        };
-        const orderBy = sortMap[sort] || 'total_orders DESC';
-
-        // Build query with optional category filter
-        let whereClause = 'supplier_id = $1 AND is_active = TRUE';
-        const params: (string | number)[] = [id];
-
-        if (category) {
-            whereClause += ' AND category_id = $2';
-            params.push(category);
-        }
-
-        // Get total count
-        const countResult = await pool.query(
-            `SELECT COUNT(*) FROM supplier_products WHERE ${whereClause}`,
-            params
-        );
-        const total = parseInt(countResult.rows[0].count);
-
-        // Get products
-        const productsResult = await pool.query(`
-            SELECT
-                p.id, p.name, p.name_ar, p.name_fr, p.slug, p.description,
-                p.image_url, p.price_min, p.price_max, p.currency, p.moq,
-                p.total_orders, p.is_featured, p.created_at,
                 c.name as category_name, c.id as category_id
             FROM supplier_products p
             LEFT JOIN categories c ON c.id = p.category_id
@@ -336,7 +261,24 @@ export async function getSupplierProducts(req: Request, res: Response, next: Nex
         res.json({
             success: true,
             data: {
-                products: productsResult.rows.map(p => ({
+                products: productsResult.rows.map((p: {
+                    id: string;
+                    name: string;
+                    name_ar: string | null;
+                    name_fr: string | null;
+                    slug: string;
+                    description: string | null;
+                    image_url: string | null;
+                    price_min: string | number | null;
+                    price_max: string | number | null;
+                    currency: string;
+                    moq: number;
+                    total_orders: number;
+                    is_featured: boolean;
+                    category_id: string | null;
+                    category_name: string | null;
+                    created_at: string;
+                }) => ({
                     id: p.id,
                     name: p.name,
                     nameAr: p.name_ar,
@@ -345,8 +287,8 @@ export async function getSupplierProducts(req: Request, res: Response, next: Nex
                     description: p.description,
                     image: p.image_url,
                     price: {
-                        min: parseFloat(p.price_min) || 0,
-                        max: parseFloat(p.price_max) || 0,
+                        min: Number(p.price_min ?? 0) || 0,
+                        max: Number(p.price_max ?? 0) || 0,
                         currency: p.currency,
                     },
                     moq: p.moq,
@@ -485,7 +427,7 @@ export async function updateProduct(req: Request, res: Response, next: NextFunct
 
         // Build dynamic update query
         const updates: string[] = [];
-        const values: any[] = [];
+        const values: Array<string | number | boolean | null> = [];
         let paramIndex = 1;
 
         const fieldMap: Record<string, string> = {
@@ -504,9 +446,10 @@ export async function updateProduct(req: Request, res: Response, next: NextFunct
         };
 
         for (const [key, column] of Object.entries(fieldMap)) {
-            if (body[key as keyof UpdateProductBody] !== undefined) {
+            const value = body[key as keyof UpdateProductBody];
+            if (value !== undefined) {
                 updates.push(`${column} = $${paramIndex}`);
-                values.push(body[key as keyof UpdateProductBody]);
+                values.push(value ?? null);
                 paramIndex++;
             }
         }
@@ -612,9 +555,9 @@ export async function getSupplierReviews(req: Request, res: Response, next: Next
         `, [...params, limit, offset]);
 
         // Calculate distribution percentages
-        const totalReviews = distributionResult.rows.reduce((sum, r) => sum + parseInt(r.count), 0);
+        const totalReviews = distributionResult.rows.reduce((sum: number, r: { count: string }) => sum + parseInt(r.count), 0);
         const distribution = [5, 4, 3, 2, 1].map(star => {
-            const found = distributionResult.rows.find(r => r.rating === star);
+            const found = distributionResult.rows.find((r: { rating: number; count: string }) => r.rating === star);
             const count = found ? parseInt(found.count) : 0;
             return {
                 stars: star,
@@ -626,7 +569,22 @@ export async function getSupplierReviews(req: Request, res: Response, next: Next
         res.json({
             success: true,
             data: {
-                reviews: reviewsResult.rows.map(r => ({
+                reviews: reviewsResult.rows.map((r: {
+                    id: string;
+                    rating: number;
+                    title: string | null;
+                    content: string;
+                    communication_rating: number | null;
+                    quality_rating: number | null;
+                    delivery_rating: number | null;
+                    is_verified_purchase: boolean;
+                    response: string | null;
+                    response_at: string | null;
+                    created_at: string;
+                    first_name: string | null;
+                    last_name: string | null;
+                    avatar_url: string | null;
+                }) => ({
                     id: r.id,
                     rating: r.rating,
                     title: r.title,
@@ -676,7 +634,15 @@ export async function getSupplierGallery(req: Request, res: Response, next: Next
 
         res.json({
             success: true,
-            data: result.rows.map(item => ({
+            data: result.rows.map((item: {
+                id: string;
+                media_type: string;
+                url: string;
+                thumbnail_url: string | null;
+                title: string | null;
+                description: string | null;
+                is_featured: boolean;
+            }) => ({
                 id: item.id,
                 type: item.media_type,
                 url: item.url,
@@ -854,7 +820,7 @@ export async function updateSupplierProfile(req: Request, res: Response, next: N
 
         // Build dynamic update query
         const updates: string[] = [];
-        const values: any[] = [];
+        const values: Array<string | number | boolean | null> = [];
         let paramIndex = 1;
 
         const fieldMap: Record<string, string> = {
@@ -877,10 +843,30 @@ export async function updateSupplierProfile(req: Request, res: Response, next: N
             bannerUrl: 'banner_url',
         };
 
+        type SupplierScalarField =
+            | 'companyName'
+            | 'companyNameAr'
+            | 'companyNameFr'
+            | 'companyType'
+            | 'yearEstablished'
+            | 'employeeCount'
+            | 'annualRevenue'
+            | 'region'
+            | 'city'
+            | 'fullAddress'
+            | 'exportExperienceYears'
+            | 'hasExportLicense'
+            | 'freeZoneCertified'
+            | 'description'
+            | 'videoUrl'
+            | 'logoUrl'
+            | 'bannerUrl';
+
         for (const [key, column] of Object.entries(fieldMap)) {
-            if (body[key as keyof UpdateSupplierBody] !== undefined) {
+            const value = body[key as SupplierScalarField] as string | number | boolean | null | undefined;
+            if (value !== undefined) {
                 updates.push(`${column} = $${paramIndex}`);
-                values.push(body[key as keyof UpdateSupplierBody]);
+                values.push(value ?? null);
                 paramIndex++;
             }
         }
@@ -897,7 +883,7 @@ export async function updateSupplierProfile(req: Request, res: Response, next: N
         if (body.exportCountries) {
             await pool.query('DELETE FROM supplier_export_countries WHERE supplier_id = $1', [id]);
             if (body.exportCountries.length > 0) {
-                const countryValues = body.exportCountries.map((code, i) =>
+                const countryValues = body.exportCountries.map((code: string, i: number) =>
                     `($1, $${i + 2})`
                 ).join(', ');
                 await pool.query(

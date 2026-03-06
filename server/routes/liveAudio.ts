@@ -1,9 +1,11 @@
 import { WebSocketServer, WebSocket } from 'ws';
 import { GoogleGenAI, Modality, LiveServerMessage } from '@google/genai';
 
+type GeminiLiveSession = Awaited<ReturnType<GoogleGenAI['live']['connect']>>;
+
 interface ClientSession {
     ws: WebSocket;
-    geminiSession: any;
+    geminiSession: GeminiLiveSession;
 }
 
 const activeSessions = new Map<WebSocket, ClientSession>();

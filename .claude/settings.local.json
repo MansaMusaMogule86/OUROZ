@@ -5,7 +5,18 @@
       "Bash(npx tsc:*)",
       "Bash(npx vite build)",
       "Bash(awk:*)",
-      "Bash(node -e:*)"
+      "Bash(node -e:*)",
+      "Bash(./node_modules/.bin/vite build:*)",
+      "Bash(for f in components/B2C/CheckoutPage.tsx components/B2C/OrderSuccessPage.tsx src/legacy-pages/BuyerMarketplace.tsx src/legacy-pages/SupplierDashboard.tsx src/legacy-pages/SupplierProfile.tsx src/legacy-pages/ProductDetail.tsx src/legacy-pages/RFQSystem.tsx src/legacy-pages/MessagingSystem.tsx src/legacy-pages/OrderManagement.tsx src/legacy-pages/Checkout.tsx)",
+      "Bash(do)",
+      "Bash(if [ -f \"$f\" ])",
+      "Bash(then echo \"EXISTS: $f\")",
+      "Bash(else echo \"MISSING: $f\")",
+      "Bash(fi)",
+      "Bash(done)",
+      "Bash(head:*)",
+      "Bash(find:*)",
+      "WebFetch(domain:babmarrakesh.ae)"
     ]
   }
 }

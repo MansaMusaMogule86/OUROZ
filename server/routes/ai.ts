@@ -5,6 +5,34 @@ const router = Router();
 
 const getAI = () => new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
 
+type InlinePart = {
+    inlineData?: {
+        data?: string;
+        mimeType?: string;
+    };
+};
+
+type GroundingChunk = {
+    web?: { title?: string; uri?: string };
+    maps?: { title?: string; uri?: string };
+};
+
+type GroundedSource = {
+    title?: string;
+    uri?: string;
+};
+
+type GenerateContentConfig = NonNullable<
+    Parameters<GoogleGenAI['models']['generateContent']>[0]['config']
+>;
+
+const getErrorMessage = (error: unknown): string => {
+    if (error instanceof Error) {
+        return error.message;
+    }
+    return 'Unknown error';
+};
+
 // Image Generation
 router.post('/generate-image', async (req: Request, res: Response) => {
     try {
@@ -22,17 +50,17 @@ router.post('/generate-image', async (req: Request, res: Response) => {
             }
         });
 
-        const parts = response.candidates?.[0]?.content?.parts ?? [];
-        const imagePart = parts.find((p: any) => p.inlineData);
+        const parts = (response.candidates?.[0]?.content?.parts ?? []) as InlinePart[];
+        const imagePart = parts.find((p) => p.inlineData);
         const imageData = imagePart?.inlineData?.data;
 
         res.json({
             success: true,
             image: imageData ? `data:image/png;base64,${imageData}` : null
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Image generation error:', error);
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({ success: false, error: getErrorMessage(error) });
     }
 });
 
@@ -52,17 +80,17 @@ router.post('/edit-image', async (req: Request, res: Response) => {
             }
         });
 
-        const parts = response.candidates?.[0]?.content?.parts ?? [];
-        const imagePart = parts.find((p: any) => p.inlineData);
+        const parts = (response.candidates?.[0]?.content?.parts ?? []) as InlinePart[];
+        const imagePart = parts.find((p) => p.inlineData);
         const imageData = imagePart?.inlineData?.data;
 
         res.json({
             success: true,
             image: imageData ? `data:image/png;base64,${imageData}` : null
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Image edit error:', error);
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({ success: false, error: getErrorMessage(error) });
     }
 });
 
@@ -107,9 +135,9 @@ router.post('/generate-video', async (req: Request, res: Response) => {
         } else {
             res.json({ success: false, error: 'No video generated' });
         }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Video generation error:', error);
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({ success: false, error: getErrorMessage(error) });
     }
 });
 
@@ -119,7 +147,7 @@ router.post('/grounded-query', async (req: Request, res: Response) => {
         const { query, useThinking, latLng } = req.body;
         const ai = getAI();
 
-        const config: any = {
+        const config: Record<string, unknown> = {
             tools: [{ googleSearch: {} }, { googleMaps: {} }]
         };
 
@@ -134,12 +162,12 @@ router.post('/grounded-query', async (req: Request, res: Response) => {
         const response = await ai.models.generateContent({
             model: useThinking ? 'gemini-3-pro-preview' : 'gemini-2.5-flash',
             contents: query,
-            config
+            config: config as GenerateContentConfig,
         });
 
-        const sources: any[] = [];
-        const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
-        chunks.forEach((chunk: any) => {
+        const sources: GroundedSource[] = [];
+        const chunks = (response.candidates?.[0]?.groundingMetadata?.groundingChunks || []) as GroundingChunk[];
+        chunks.forEach((chunk) => {
             if (chunk.web) sources.push({ title: chunk.web.title, uri: chunk.web.uri });
             if (chunk.maps) sources.push({ title: chunk.maps.title, uri: chunk.maps.uri });
         });
@@ -149,9 +177,9 @@ router.post('/grounded-query', async (req: Request, res: Response) => {
             text: response.text || "I couldn't generate a response.",
             sources
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Grounded query error:', error);
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({ success: false, error: getErrorMessage(error) });
     }
 });
 
@@ -172,9 +200,9 @@ router.post('/transcribe', async (req: Request, res: Response) => {
         });
 
         res.json({ success: true, text: response.text });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Transcription error:', error);
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({ success: false, error: getErrorMessage(error) });
     }
 });
 
@@ -200,9 +228,9 @@ Strategy Advice:`,
         });
 
         res.json({ success: true, text: response.text });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Negotiation advice error:', error);
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({ success: false, error: getErrorMessage(error) });
     }
 });
 
@@ -223,9 +251,9 @@ router.post('/analyze-document', async (req: Request, res: Response) => {
         });
 
         res.json({ success: true, text: response.text });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Document analysis error:', error);
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({ success: false, error: getErrorMessage(error) });
     }
 });
 
@@ -246,9 +274,9 @@ router.post('/analyze-visual', async (req: Request, res: Response) => {
         });
 
         res.json({ success: true, text: response.text });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Visual analysis error:', error);
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({ success: false, error: getErrorMessage(error) });
     }
 });
 
@@ -273,9 +301,9 @@ router.post('/text-to-speech', async (req: Request, res: Response) => {
 
         const audioData = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
         res.json({ success: true, audio: audioData });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('TTS error:', error);
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({ success: false, error: getErrorMessage(error) });
     }
 });
 
