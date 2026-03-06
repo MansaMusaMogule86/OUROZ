@@ -19,3 +19,11 @@ This journal tracks critical learnings and performance patterns specific to the 
 Should be wrapped with `React.memo()` to prevent unnecessary re-renders.
 
 ---
+
+## 2026-03-05 - O(1) Lookups and Static Constants in Render Loops
+
+**Learning:** In `components/B2C/Storefront.tsx`, `DUMMY_PRODUCTS` was being filtered on every single render to calculate `retailProducts`, and `wishlist.some()` was being called inside the render loop for every product to check if it was `isInAmud` (O(N) operation per product, leading to O(N*M) where N=products and M=wishlist items).
+**Action:**
+1. Moved static filtering (`const RETAIL_PRODUCTS = DUMMY_PRODUCTS.filter(...)`) outside of the component entirely.
+2. Wrapped the product filtering logic with `useMemo` so it only recalculates when dependencies change.
+3. Converted the array lookup (`wishlist`) into a `Set` via `useMemo` (`wishlistIds = new Set(wishlist.map(p => p.id))`), reducing the `isInAmud` check to an O(1) `Set.has()` operation.
