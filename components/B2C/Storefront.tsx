@@ -15,19 +15,28 @@ const B2CStorefront: React.FC<StorefrontProps> = ({ wishlist, onToggleWishlist, 
   const [showWishlistOnly, setShowWishlistOnly] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  const retailProducts = DUMMY_PRODUCTS.filter(p => p.retailEnabled && p.is_active);
-  const displayProducts = showWishlistOnly ? wishlist : retailProducts;
+  // ⚡ BOLT OPTIMIZATION: Memoize expensive array calculations
+  // Previously, DUMMY_PRODUCTS filtering and the entire search filter ran on every render.
+  const retailProducts = React.useMemo(() =>
+    DUMMY_PRODUCTS.filter(p => p.retailEnabled && p.is_active),
+  []);
 
-  const filtered = displayProducts.filter(p => {
+  const filtered = React.useMemo(() => {
+    const displayProducts = showWishlistOnly ? wishlist : retailProducts;
     const term = searchTerm.toLowerCase();
-    const matchesSearch = p.name.toLowerCase().includes(term) || 
-                          p.category.toLowerCase().includes(term) ||
-                          p.search_tags.toLowerCase().includes(term);
-    const matchesCategory = activeCategory === 'all' || p.category_slug === activeCategory;
-    return matchesSearch && matchesCategory;
-  });
 
-  const isInAmud = (productId: string) => wishlist.some(p => p.id === productId);
+    return displayProducts.filter(p => {
+      const matchesSearch = p.name.toLowerCase().includes(term) ||
+                            p.category.toLowerCase().includes(term) ||
+                            p.search_tags.toLowerCase().includes(term);
+      const matchesCategory = activeCategory === 'all' || p.category_slug === activeCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [showWishlistOnly, wishlist, retailProducts, searchTerm, activeCategory]);
+
+  // ⚡ BOLT OPTIMIZATION: Use a Set for O(1) wishlist lookups instead of O(n) array.some() on every render loop iteration
+  const wishlistSet = React.useMemo(() => new Set(wishlist.map(p => p.id)), [wishlist]);
+  const isInAmud = React.useCallback((productId: string) => wishlistSet.has(productId), [wishlistSet]);
 
   return (
     <div className="space-y-32 animate-fade-in pt-10">
@@ -133,11 +142,12 @@ const B2CStorefront: React.FC<StorefrontProps> = ({ wishlist, onToggleWishlist, 
   );
 };
 
-const ArtifactCard: React.FC<{ 
+// ⚡ BOLT OPTIMIZATION: Memoize ArtifactCard to prevent re-rendering all items when just typing in search or clicking one
+const ArtifactCard = React.memo<{
   product: Product; 
   onAdd: () => void;
   isInAmud: boolean;
-}> = ({ product, onAdd, isInAmud }) => (
+}>(({ product, onAdd, isInAmud }) => (
   <div className="group card-vogue bg-white/40 glass-vogue overflow-hidden hover:-translate-y-8 shadow-gold-ambient border-gold/10 hover:border-gold/50 flex flex-col h-full active:scale-[0.98]">
     <div className="relative h-[500px] overflow-hidden shrink-0 bg-sahara/50">
       <img src={product.image} className="w-full h-full object-cover grayscale-[0.3] contrast-125 transition-all duration-1000 group-hover:scale-110 group-hover:grayscale-0" alt={product.name} />
@@ -169,6 +179,6 @@ const ArtifactCard: React.FC<{
       </div>
     </div>
   </div>
-);
+));
 
 export default B2CStorefront;

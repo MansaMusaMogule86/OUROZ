@@ -7,7 +7,7 @@
  * including payment tracking, shipment updates, and dispute handling.
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
     Package, Truck, CreditCard, CheckCircle, Clock, AlertCircle,
@@ -171,12 +171,11 @@ const OrderManagement: React.FC<OrderManagementProps> = ({ language, userId, use
     const [filterStatus, setFilterStatus] = useState<string>('all');
     const [searchQuery, setSearchQuery] = useState('');
 
-    // ⚡ BOLT OPTIMIZATION: Memoize filtered orders to prevent recalculation on every render
-    const filteredOrders = useMemo(() => MOCK_ORDERS.filter(order => {
+    const filteredOrders = MOCK_ORDERS.filter(order => {
         if (filterStatus !== 'all' && order.status !== filterStatus) return false;
         if (searchQuery && !order.orderNumber.toLowerCase().includes(searchQuery.toLowerCase())) return false;
         return true;
-    }), [filterStatus, searchQuery]);
+    });
 
     if (selectedOrder) {
         return (
@@ -250,7 +249,7 @@ const OrderManagement: React.FC<OrderManagementProps> = ({ language, userId, use
                         <OrderCard
                             key={order.id}
                             order={order}
-                            onSelect={setSelectedOrder}
+                            onClick={() => setSelectedOrder(order)}
                             onNavigate={onNavigate}
                         />
                     ))}
@@ -268,12 +267,11 @@ const OrderManagement: React.FC<OrderManagementProps> = ({ language, userId, use
     );
 };
 
-// ⚡ BOLT OPTIMIZATION: Memoize OrderCard and use stable onSelect callback
-const OrderCard = React.memo<{
+const OrderCard: React.FC<{
     order: Order;
-    onSelect: (order: Order) => void;
+    onClick: () => void;
     onNavigate: (path: string) => void;
-}>(({ order, onSelect, onNavigate }) => {
+}> = ({ order, onClick, onNavigate }) => {
     const config = STATUS_CONFIG[order.status];
     const StatusIcon = config.icon;
 
@@ -281,7 +279,7 @@ const OrderCard = React.memo<{
         <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            onClick={() => onSelect(order)}
+            onClick={onClick}
             className="bg-white rounded-xl shadow-sm hover:shadow-md transition cursor-pointer overflow-hidden"
         >
             {/* Header */}
@@ -376,7 +374,7 @@ const OrderCard = React.memo<{
             )}
         </motion.div>
     );
-});
+};
 
 const OrderDetail: React.FC<{
     order: Order;
