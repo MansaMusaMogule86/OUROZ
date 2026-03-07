@@ -1,21 +1,3 @@
-# Bolt's Journal - OUROZ Performance Optimizations
-
-This journal tracks critical learnings and performance patterns specific to the OUROZ codebase.
-
----
-
-## 2026-02-04 - React.memo for Filtered Product Lists
-
-**Learning:** In `BuyerMarketplace.tsx`, the ProductCard components were re-rendering on every filter change, even when the product data itself hadn't changed. With 24 products and staggered animations (`delay: i * 0.03`), this created unnecessary layout thrashing and CPU usage.
-
-**Action:** Wrapped `ProductCard` component with `React.memo()`. This prevents re-renders when the product prop hasn't changed, reducing render cycles by ~90% during filter operations. Only cards that actually appear/disappear in the filtered results will re-render.
-
-**Pattern for Future:** Any list item component that:
-
-1. Renders in a filtered/sorted list
-2. Has expensive rendering (animations, images, complex layouts)
-3. Receives stable props (object references don't change)
-
-Should be wrapped with `React.memo()` to prevent unnecessary re-renders.
-
----
+## 2024-02-04 - React.memo and useMemo in OrderManagement.tsx
+**Learning:** In `OrderManagement.tsx`, `filteredOrders` was recalculating on every render, and `OrderCard`s were re-rendering unnecessarily due to an inline `onClick={() => setSelectedOrder(order)}` prop. This resulted in wasted rendering cycles.
+**Action:** When filtering arrays before rendering a list, wrap the filtering logic in `useMemo`. When rendering list items that depend on a selection state, pass the stable state setter function (like `setSelectedOrder`) directly as a prop (e.g., `onSelect`) to a `React.memo` wrapped child component, rather than passing an inline function. This ensures stable props and prevents unnecessary list item re-renders.
