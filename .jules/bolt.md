@@ -19,3 +19,13 @@ This journal tracks critical learnings and performance patterns specific to the 
 Should be wrapped with `React.memo()` to prevent unnecessary re-renders.
 
 ---
+
+## 2026-02-04 - React.memo and useMemo for Filtered Order Lists
+
+**Learning:** In `OrderManagement.tsx`, `filteredOrders` was calculated on every render, and the `OrderCard` instances were recreated whenever the parent `OrderManagement` re-rendered. This happened frequently during user text input in the search bar. We learned that the inline `onClick={() => setSelectedOrder(order)}` function was breaking referential equality and preventing memoization from working.
+
+**Action:**
+1. Wrapped `filteredOrders` array in `useMemo` with `filterStatus` and `searchQuery` as dependencies.
+2. Used `React.memo` on the `OrderCard` list item component.
+3. Changed the inline `onClick` to a stable callback `onSelect` and passed the state setter `setSelectedOrder` directly from the parent, which React guarantees to be a stable reference.
+This combination reduces re-renders of unrelated `OrderCard`s while filtering large lists.
