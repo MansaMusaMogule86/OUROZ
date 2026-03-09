@@ -19,3 +19,9 @@ This journal tracks critical learnings and performance patterns specific to the 
 Should be wrapped with `React.memo()` to prevent unnecessary re-renders.
 
 ---
+
+## 2026-02-04 - Debouncing Global State Updates in High-Frequency Inputs
+
+**Learning:** In React architectures using global or page-level state for inputs (like `filters.search` in `BuyerMarketplace.tsx`), directly updating the parent state via an `onChange` handler causes the entire component tree to re-render on every keystroke. This causes massive layout thrashing and input lag.
+
+**Action:** When a high-frequency event (like typing) updates a global state, decouple the input's visual state from the parent's data state. Store the input value in local component state (`useState`), update *that* state on `onChange` to keep the UI snappy, and use a `useEffect` with a timeout (e.g., 300ms) to debounce the update to the parent state.
