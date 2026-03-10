@@ -14,6 +14,7 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
 /**
  * PATCH /api/orders/[id]/status
  * Updates order status with validation of allowed transitions.
+ * Requires authentication. Only order owner, supplier, or admin can update.
  * Body: { status: string, trackingNumber?: string }
  */
 export async function PATCH(
@@ -22,6 +23,21 @@ export async function PATCH(
 ) {
     try {
         const { id } = await params;
+
+        // --- Auth check ---
+        const authHeader = request.headers.get('authorization');
+        if (!authHeader?.startsWith('Bearer ')) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const supabase = createServerClient();
+        const token = authHeader.slice(7);
+        const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+        if (authError || !user) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const body = await request.json();
         const newStatus: string = body.status;
         const trackingNumber: string | undefined = body.trackingNumber;
@@ -30,17 +46,28 @@ export async function PATCH(
             return NextResponse.json({ error: 'status is required' }, { status: 400 });
         }
 
-        const supabase = createServerClient();
-
-        // Fetch current order
+        // Fetch current order with user_id for ownership check
         const { data: order, error: fetchError } = await supabase
             .from('orders')
-            .select('id, status, order_number')
+            .select('id, status, order_number, user_id')
             .eq('id', id)
             .single();
 
         if (fetchError || !order) {
             return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+        }
+
+        // --- Authorization: order owner or admin ---
+        if (order.user_id !== user.id) {
+            const { data: profile } = await supabase
+                .from('user_profiles')
+                .select('role')
+                .eq('user_id', user.id)
+                .single();
+
+            if (profile?.role !== 'admin') {
+                return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+            }
         }
 
         // Validate transition

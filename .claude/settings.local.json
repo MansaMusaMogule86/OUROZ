@@ -16,7 +16,14 @@
       "Bash(done)",
       "Bash(head:*)",
       "Bash(find:*)",
-      "WebFetch(domain:babmarrakesh.ae)"
+      "WebFetch(domain:babmarrakesh.ae)",
+      "Bash(git stash drop:*)",
+      "Bash(ls:*)",
+      "Read(//c/PROJECTS/OUROZ/**)",
+      "Bash(grep:*)",
+      "Bash(xargs cat:*)",
+      "Bash(for file in app/*/page.tsx)",
+      "Bash(do dirname \"$file\":*)"
     ]
   }
 }

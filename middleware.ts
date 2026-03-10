@@ -4,13 +4,13 @@ import { createServerClient as createSupabaseMiddleware } from '@supabase/ssr';
 /**
  * OUROZ – Route Protection Middleware
  *
- * Protects /account, /checkout, /supplier/*, /admin/* routes.
- * Redirects unauthenticated users to /auth/login.
- * Admin routes additionally require the 'admin' role in user_profiles.
+ * Protects privileged routes: account, checkout, supplier, admin, business,
+ * wholesale, and trade areas. Redirects unauthenticated users to /auth/login.
+ * Role-specific checks are enforced in layout components.
  */
 
-const PROTECTED_PREFIXES = ['/account', '/checkout', '/supplier', '/admin'];
-const PUBLIC_SUPPLIER = ['/supplier/register'];
+const PROTECTED_PREFIXES = ['/account', '/checkout', '/supplier', '/admin', '/business', '/wholesale', '/trade'];
+const PUBLIC_EXCEPTIONS = ['/supplier/register', '/wholesale/apply', '/business/apply'];
 
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
@@ -19,8 +19,8 @@ export async function middleware(request: NextRequest) {
     const isProtected = PROTECTED_PREFIXES.some(prefix => pathname.startsWith(prefix));
     if (!isProtected) return NextResponse.next();
 
-    // Allow public supplier registration
-    if (PUBLIC_SUPPLIER.includes(pathname)) return NextResponse.next();
+    // Allow public pages (registration, applications) within protected prefixes
+    if (PUBLIC_EXCEPTIONS.includes(pathname)) return NextResponse.next();
 
     // Create Supabase client for middleware (reads cookies)
     let response = NextResponse.next({ request });
@@ -56,5 +56,13 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ['/account/:path*', '/checkout/:path*', '/supplier/:path*', '/admin/:path*'],
+    matcher: [
+        '/account/:path*',
+        '/checkout/:path*',
+        '/supplier/:path*',
+        '/admin/:path*',
+        '/business/:path*',
+        '/wholesale/:path*',
+        '/trade/:path*',
+    ],
 };

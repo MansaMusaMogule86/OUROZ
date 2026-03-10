@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/trade/layout,_N_T_/trade/suppliers/layout,_N_T_/trade/suppliers/page,_N_T_/trade/suppliers"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/trade/suppliers/__PAGE__",
+    "/trade/suppliers",
+    "/trade",
+    "/_index",
+    "/_head"
+  ]
+}

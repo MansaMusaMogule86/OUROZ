@@ -25,16 +25,28 @@
         {
           "regexp": "/:nextData(_next/data/[^/]{1,})?/admin/:path*{(\\\\.json)}?",
           "originalSource": "/admin/:path*"
+        },
+        {
+          "regexp": "/:nextData(_next/data/[^/]{1,})?/business/:path*{(\\\\.json)}?",
+          "originalSource": "/business/:path*"
+        },
+        {
+          "regexp": "/:nextData(_next/data/[^/]{1,})?/wholesale/:path*{(\\\\.json)}?",
+          "originalSource": "/wholesale/:path*"
+        },
+        {
+          "regexp": "/:nextData(_next/data/[^/]{1,})?/trade/:path*{(\\\\.json)}?",
+          "originalSource": "/trade/:path*"
         }
       ],
       "wasm": [],
       "assets": [],
       "env": {
-        "__NEXT_BUILD_ID": "XYwD50OJtrJ35OBGuiS7b",
-        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "/j5/xsCHfDsecHaAHGSIOUzQjz4OcSh5tJwIVsNJu3c=",
-        "__NEXT_PREVIEW_MODE_ID": "4c4816b70738942755ca6ab1abe7a914",
-        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "9f8a9d5925ce74a1d5a5a4ec5c4ac87b3182de33ac6d8dd1c63a6658928d7151",
-        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "87c8626573c50eb1deda5fce5a1bcc3f530fa919f81321d2cf7c620d3a2134cd"
+        "__NEXT_BUILD_ID": "6fEh3gl8_EMIAvSoP3UDs",
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "OAYaldK9sZSQAo20HF9xVV93p9up5TAydd6gy7SZF2U=",
+        "__NEXT_PREVIEW_MODE_ID": "609d51c97f4b11dab7864486034f7491",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "6dac96984d03cf1b3013fdcdc838bb003ad692de7613ac54b8ad473a0f7e3c7d",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "d475eceb970fbb9f5ffadc51698a036f0de9a35c673e79de1fe23dd0126dfb3f"
       }
     }
   },

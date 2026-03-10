@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/trade/layout,_N_T_/trade/rfq/layout,_N_T_/trade/rfq/new/layout,_N_T_/trade/rfq/new/page,_N_T_/trade/rfq/new"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/trade/rfq/new/__PAGE__",
+    "/trade/rfq/new",
+    "/trade/rfq",
+    "/trade",
+    "/_index",
+    "/_head"
+  ]
+}

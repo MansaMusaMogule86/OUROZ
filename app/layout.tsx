@@ -9,6 +9,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import { LangProvider } from '@/contexts/LangContext';
 import { CartProvider } from '@/contexts/CartContext';
 import CartDrawer from '@/components/shop/CartDrawer';
+import { ToastProvider } from '@/components/ui/Toast';
 
 // Reuse existing globals (design system tokens)
 import '../ouroz-engine/src/app/globals.css';
@@ -32,9 +33,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <body className={`${geistSans.variable} ${geistMono.variable} bg-[var(--color-sahara)] antialiased`}>
                 <LangProvider>
                     <CartProvider>
-                        {children}
-                        {/* Cart drawer lives here so it's always accessible */}
-                        <CartDrawer />
+                        <ToastProvider>
+                            {children}
+                            {/* Cart drawer lives here so it's always accessible */}
+                            <CartDrawer />
+                        </ToastProvider>
                     </CartProvider>
                 </LangProvider>
             </body>

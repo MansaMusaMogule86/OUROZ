@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { Heart, Share2, Flag } from 'lucide-react';
 import { useSupplierActions } from '../../hooks/useSupplier';
+import { useToast } from '../ui/Toast';
 
 interface SupplierHeroBannerProps {
     bannerUrl?: string;
@@ -23,6 +24,7 @@ const SupplierHeroBanner: React.FC<SupplierHeroBannerProps> = ({
     const [favorited, setFavorited] = useState(isFavorited);
     const [showReportModal, setShowReportModal] = useState(false);
     const { toggleFavorite, loading } = useSupplierActions();
+    const { toast } = useToast();
 
     const handleFavoriteClick = async () => {
         const success = await toggleFavorite(supplierId, favorited);
@@ -38,7 +40,7 @@ const SupplierHeroBanner: React.FC<SupplierHeroBannerProps> = ({
             await navigator.share({ title: 'Supplier Profile', url });
         } else {
             await navigator.clipboard.writeText(url);
-            // TODO: Show toast notification
+            toast('Link copied to clipboard', 'info');
         }
     };
 
@@ -100,6 +102,7 @@ const ReportModal: React.FC<{
     const [reason, setReason] = useState<string>('');
     const [description, setDescription] = useState('');
     const { reportSupplier, loading } = useSupplierActions();
+    const { toast } = useToast();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -111,8 +114,8 @@ const ReportModal: React.FC<{
         });
 
         if (result.success) {
+            toast('Report submitted successfully');
             onClose();
-            // TODO: Show success toast
         }
     };
 
