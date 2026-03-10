@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { DUMMY_PRODUCTS, CATEGORIES } from '../../constants';
 import { Product } from '../../types';
 
@@ -9,23 +9,28 @@ interface StorefrontProps {
   onNavigateToCategory: (slug: string) => void;
 }
 
+// ⚡ Bolt: Move static filtering outside component to prevent array recreation on every render
+const retailProducts = DUMMY_PRODUCTS.filter(p => p.retailEnabled && p.is_active);
+
 const B2CStorefront: React.FC<StorefrontProps> = ({ wishlist, onToggleWishlist, onNavigateToCategory }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [showWishlistOnly, setShowWishlistOnly] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  const retailProducts = DUMMY_PRODUCTS.filter(p => p.retailEnabled && p.is_active);
-  const displayProducts = showWishlistOnly ? wishlist : retailProducts;
-
-  const filtered = displayProducts.filter(p => {
+  // ⚡ Bolt: Memoize filtered results to prevent expensive recalculation on every render
+  const filtered = useMemo(() => {
+    const displayProducts = showWishlistOnly ? wishlist : retailProducts;
     const term = searchTerm.toLowerCase();
-    const matchesSearch = p.name.toLowerCase().includes(term) || 
-                          p.category.toLowerCase().includes(term) ||
-                          p.search_tags.toLowerCase().includes(term);
-    const matchesCategory = activeCategory === 'all' || p.category_slug === activeCategory;
-    return matchesSearch && matchesCategory;
-  });
+
+    return displayProducts.filter(p => {
+      const matchesSearch = p.name.toLowerCase().includes(term) ||
+                            p.category.toLowerCase().includes(term) ||
+                            p.search_tags.toLowerCase().includes(term);
+      const matchesCategory = activeCategory === 'all' || p.category_slug === activeCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [showWishlistOnly, wishlist, searchTerm, activeCategory]);
 
   const isInAmud = (productId: string) => wishlist.some(p => p.id === productId);
 
