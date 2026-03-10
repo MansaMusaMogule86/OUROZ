@@ -124,7 +124,7 @@ const B2CStorefront: React.FC<StorefrontProps> = ({ wishlist, onToggleWishlist, 
           <ArtifactCard 
             key={product.id}
             product={product} 
-            onAdd={() => onToggleWishlist(product)} 
+            onToggle={onToggleWishlist}
             isInAmud={isInAmud(product.id)}
           />
         ))}
@@ -133,42 +133,48 @@ const B2CStorefront: React.FC<StorefrontProps> = ({ wishlist, onToggleWishlist, 
   );
 };
 
-const ArtifactCard: React.FC<{ 
-  product: Product; 
-  onAdd: () => void;
+interface ArtifactCardProps {
+  product: Product;
+  onToggle: (product: Product) => void;
   isInAmud: boolean;
-}> = ({ product, onAdd, isInAmud }) => (
-  <div className="group card-vogue bg-white/40 glass-vogue overflow-hidden hover:-translate-y-8 shadow-gold-ambient border-gold/10 hover:border-gold/50 flex flex-col h-full active:scale-[0.98]">
-    <div className="relative h-[500px] overflow-hidden shrink-0 bg-sahara/50">
-      <img src={product.image} className="w-full h-full object-cover grayscale-[0.3] contrast-125 transition-all duration-1000 group-hover:scale-110 group-hover:grayscale-0" alt={product.name} />
-      <div className="absolute inset-0 bg-henna/0 group-hover:bg-henna/10 transition-all duration-700 flex items-center justify-center opacity-0 group-hover:opacity-100">
-         <button onClick={onAdd} className="px-10 py-5 bg-sahara text-henna rounded-full shadow-luxury heading-vogue text-[10px] hover:bg-gold hover:text-white transition-all transform hover:scale-110">
-           {isInAmud ? 'Remove Trace' : 'Trace to Amud'}
-         </button>
-      </div>
-      {isInAmud && (
-        <div className="absolute top-8 left-8 w-12 h-12 glass-vogue rounded-full flex items-center justify-center border-gold animate-pulse">
-           <span className="yaz-shimmer text-xl font-serif">ⵣ</span>
-        </div>
-      )}
-    </div>
+}
 
-    <div className="p-12 flex flex-col flex-1 bg-transparent">
-      <div className="flex justify-between items-start mb-8">
-        <span className="heading-vogue text-[10px] text-gold/60">{product.category}</span>
-        <span className="text-henna/5 font-serif text-5xl select-none">ⵣ</span>
+const ArtifactCard = React.memo(({ product, onToggle, isInAmud }: ArtifactCardProps) => {
+  const handleToggle = () => onToggle(product);
+
+  return (
+    <div className="group card-vogue bg-white/40 glass-vogue overflow-hidden hover:-translate-y-8 shadow-gold-ambient border-gold/10 hover:border-gold/50 flex flex-col h-full active:scale-[0.98]">
+      <div className="relative h-[500px] overflow-hidden shrink-0 bg-sahara/50">
+        <img src={product.image} className="w-full h-full object-cover grayscale-[0.3] contrast-125 transition-all duration-1000 group-hover:scale-110 group-hover:grayscale-0" alt={product.name} />
+        <div className="absolute inset-0 bg-henna/0 group-hover:bg-henna/10 transition-all duration-700 flex items-center justify-center opacity-0 group-hover:opacity-100">
+          <button onClick={handleToggle} className="px-10 py-5 bg-sahara text-henna rounded-full shadow-luxury heading-vogue text-[10px] hover:bg-gold hover:text-white transition-all transform hover:scale-110">
+            {isInAmud ? 'Remove Trace' : 'Trace to Amud'}
+          </button>
+        </div>
+        {isInAmud && (
+          <div className="absolute top-8 left-8 w-12 h-12 glass-vogue rounded-full flex items-center justify-center border-gold animate-pulse">
+            <span className="yaz-shimmer text-xl font-serif">ⵣ</span>
+          </div>
+        )}
       </div>
-      <h3 className="heading-vogue text-2xl text-henna mb-8 leading-tight line-clamp-2 h-20 group-hover:text-gold transition-colors">{product.name}</h3>
-      <p className="text-lg text-henna/40 mb-12 line-clamp-2 flex-1 font-serif font-light italic leading-relaxed">{product.short_description}</p>
-      
-      <div className="flex items-center justify-between mt-auto pt-10 border-t border-gold/10">
-        <span className="heading-vogue text-3xl text-henna tracking-tighter">{product.price.toFixed(0)} <span className="text-[10px] font-sans text-gold uppercase tracking-[0.4em]">{product.currency}</span></span>
-        <button onClick={onAdd} className={`w-16 h-16 rounded-full flex items-center justify-center transition-all transform hover:scale-125 active:scale-90 shadow-luxury ${isInAmud ? 'bg-majorelle text-white' : 'bg-henna text-white hover:bg-majorelle'}`}>
-           <span className="text-2xl font-serif">ⵣ</span>
-        </button>
+
+      <div className="p-12 flex flex-col flex-1 bg-transparent">
+        <div className="flex justify-between items-start mb-8">
+          <span className="heading-vogue text-[10px] text-gold/60">{product.category}</span>
+          <span className="text-henna/5 font-serif text-5xl select-none">ⵣ</span>
+        </div>
+        <h3 className="heading-vogue text-2xl text-henna mb-8 leading-tight line-clamp-2 h-20 group-hover:text-gold transition-colors">{product.name}</h3>
+        <p className="text-lg text-henna/40 mb-12 line-clamp-2 flex-1 font-serif font-light italic leading-relaxed">{product.short_description}</p>
+
+        <div className="flex items-center justify-between mt-auto pt-10 border-t border-gold/10">
+          <span className="heading-vogue text-3xl text-henna tracking-tighter">{product.price.toFixed(0)} <span className="text-[10px] font-sans text-gold uppercase tracking-[0.4em]">{product.currency}</span></span>
+          <button onClick={handleToggle} className={`w-16 h-16 rounded-full flex items-center justify-center transition-all transform hover:scale-125 active:scale-90 shadow-luxury ${isInAmud ? 'bg-majorelle text-white' : 'bg-henna text-white hover:bg-majorelle'}`}>
+            <span className="text-2xl font-serif">ⵣ</span>
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+});
 
 export default B2CStorefront;
