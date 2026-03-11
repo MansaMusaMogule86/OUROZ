@@ -177,7 +177,6 @@ const translations = {
 
 // Main Component
 const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, language, onLanguageChange }) => {
-    const [searchQuery, setSearchQuery] = useState('');
     const [isScrolled, setIsScrolled] = useState(false);
     const t = translations[language];
     const isRTL = language === 'ar';
@@ -187,13 +186,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, language, onLangu
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
-
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (searchQuery.trim()) {
-            onNavigate(`/search?q=${encodeURIComponent(searchQuery)}`);
-        }
-    };
 
     return (
         <div className={`min-h-screen bg-sahara ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
@@ -208,9 +200,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, language, onLangu
             {/* Hero Section */}
             <HeroSection
                 t={t}
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-                handleSearch={handleSearch}
                 onNavigate={onNavigate}
             />
 
@@ -310,106 +299,114 @@ const Header: React.FC<{
 
 const HeroSection: React.FC<{
     t: typeof translations.en;
-    searchQuery: string;
-    setSearchQuery: (q: string) => void;
-    handleSearch: (e: React.FormEvent) => void;
     onNavigate: (path: string) => void;
-}> = ({ t, searchQuery, setSearchQuery, handleSearch, onNavigate }) => (
-    <section className="relative pt-32 pb-20 overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-5">
-            <div className="absolute inset-0 bg-moroccan-pattern" />
-        </div>
+}> = ({ t, onNavigate }) => {
+    const [searchQuery, setSearchQuery] = useState('');
 
-        <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-4xl mx-auto text-center">
-                {/* Badge */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="inline-flex items-center gap-2 bg-amber-100 text-amber-800 px-4 py-2 rounded-full text-sm font-medium mb-8"
-                >
-                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                    Morocco's #1 B2B Trade Platform
-                </motion.div>
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            onNavigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+        }
+    };
 
-                {/* Title */}
-                <motion.h1
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="text-5xl md:text-7xl font-serif font-bold text-henna mb-6"
-                >
-                    {t.heroTitle}{' '}
-                    <span className="bg-gradient-to-r from-amber-500 to-amber-700 bg-clip-text text-transparent">
-                        {t.heroHighlight}
-                    </span>
-                </motion.h1>
-
-                {/* Subtitle */}
-                <motion.p
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="text-xl text-henna/60 mb-10 max-w-2xl mx-auto leading-relaxed"
-                >
-                    {t.heroSubtitle}
-                </motion.p>
-
-                {/* Search Bar */}
-                <motion.form
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                    onSubmit={handleSearch}
-                    className="max-w-2xl mx-auto mb-10"
-                >
-                    <div className="relative flex items-center bg-white rounded-2xl shadow-xl border border-amber-100 p-2">
-                        <Search className="w-6 h-6 text-gray-400 ml-4" />
-                        <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder={t.searchPlaceholder}
-                            className="flex-1 px-4 py-3 text-lg text-henna placeholder-gray-400 bg-transparent border-none outline-none"
-                        />
-                        <button
-                            type="submit"
-                            className="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-8 py-3 rounded-xl font-semibold hover:shadow-lg transition"
-                        >
-                            Search
-                        </button>
-                    </div>
-                </motion.form>
-
-                {/* CTA Buttons */}
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                    className="flex flex-col sm:flex-row gap-4 justify-center"
-                >
-                    <button
-                        onClick={() => onNavigate('/register?type=buyer')}
-                        className="inline-flex items-center gap-2 bg-henna text-white px-8 py-4 rounded-xl font-semibold hover:bg-henna/90 transition shadow-lg"
-                    >
-                        <Users className="w-5 h-5" />
-                        {t.buyerCta}
-                        <ArrowRight className="w-5 h-5" />
-                    </button>
-                    <button
-                        onClick={() => onNavigate('/register?type=supplier')}
-                        className="inline-flex items-center gap-2 bg-white text-henna border-2 border-henna px-8 py-4 rounded-xl font-semibold hover:bg-henna hover:text-white transition"
-                    >
-                        <Factory className="w-5 h-5" />
-                        {t.supplierCta}
-                        <ArrowRight className="w-5 h-5" />
-                    </button>
-                </motion.div>
+    return (
+        <section className="relative pt-32 pb-20 overflow-hidden">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-5">
+                <div className="absolute inset-0 bg-moroccan-pattern" />
             </div>
-        </div>
-    </section>
-);
+
+            <div className="container mx-auto px-4 relative z-10">
+                <div className="max-w-4xl mx-auto text-center">
+                    {/* Badge */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="inline-flex items-center gap-2 bg-amber-100 text-amber-800 px-4 py-2 rounded-full text-sm font-medium mb-8"
+                    >
+                        <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                        Morocco's #1 B2B Trade Platform
+                    </motion.div>
+
+                    {/* Title */}
+                    <motion.h1
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="text-5xl md:text-7xl font-serif font-bold text-henna mb-6"
+                    >
+                        {t.heroTitle}{' '}
+                        <span className="bg-gradient-to-r from-amber-500 to-amber-700 bg-clip-text text-transparent">
+                            {t.heroHighlight}
+                        </span>
+                    </motion.h1>
+
+                    {/* Subtitle */}
+                    <motion.p
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="text-xl text-henna/60 mb-10 max-w-2xl mx-auto leading-relaxed"
+                    >
+                        {t.heroSubtitle}
+                    </motion.p>
+
+                    {/* Search Bar */}
+                    <motion.form
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        onSubmit={handleSearch}
+                        className="max-w-2xl mx-auto mb-10"
+                    >
+                        <div className="relative flex items-center bg-white rounded-2xl shadow-xl border border-amber-100 p-2">
+                            <Search className="w-6 h-6 text-gray-400 ml-4" />
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder={t.searchPlaceholder}
+                                className="flex-1 px-4 py-3 text-lg text-henna placeholder-gray-400 bg-transparent border-none outline-none"
+                            />
+                            <button
+                                type="submit"
+                                className="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-8 py-3 rounded-xl font-semibold hover:shadow-lg transition"
+                            >
+                                Search
+                            </button>
+                        </div>
+                    </motion.form>
+
+                    {/* CTA Buttons */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4 }}
+                        className="flex flex-col sm:flex-row gap-4 justify-center"
+                    >
+                        <button
+                            onClick={() => onNavigate('/register?type=buyer')}
+                            className="inline-flex items-center gap-2 bg-henna text-white px-8 py-4 rounded-xl font-semibold hover:bg-henna/90 transition shadow-lg"
+                        >
+                            <Users className="w-5 h-5" />
+                            {t.buyerCta}
+                            <ArrowRight className="w-5 h-5" />
+                        </button>
+                        <button
+                            onClick={() => onNavigate('/register?type=supplier')}
+                            className="inline-flex items-center gap-2 bg-white text-henna border-2 border-henna px-8 py-4 rounded-xl font-semibold hover:bg-henna hover:text-white transition"
+                        >
+                            <Factory className="w-5 h-5" />
+                            {t.supplierCta}
+                            <ArrowRight className="w-5 h-5" />
+                        </button>
+                    </motion.div>
+                </div>
+            </div>
+        </section>
+    );
+};
 
 const TrustBadges: React.FC<{ badges: typeof TRUST_BADGES; language: 'en' | 'ar' | 'fr' }> = ({ badges, language }) => (
     <section className="py-6 border-y border-henna/10 bg-white/50">
