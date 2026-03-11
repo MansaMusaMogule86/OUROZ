@@ -19,3 +19,11 @@ This journal tracks critical learnings and performance patterns specific to the 
 Should be wrapped with `React.memo()` to prevent unnecessary re-renders.
 
 ---
+
+## 2026-02-05 - Avoid Inline Functions with Memoized Components
+
+**Learning:** In `Storefront.tsx`, `ArtifactCard` was receiving an inline arrow function (`onAdd={() => onToggleWishlist(product)}`) as a prop. This caused a new function reference to be created on every render, defeating `React.memo` optimization even if other props were stable. The search input caused frequent re-renders of the parent, which cascaded to all children.
+
+**Action:** Refactored `ArtifactCard` to accept the stable `onToggleWishlist` function directly and handle the product binding internally (`handleToggle`). This ensures props are referentially stable, allowing `React.memo` to skip re-renders for unchanged cards during filtering.
+
+**Pattern for Future:** When memoizing list items, ALWAYS check that callback props are stable. Avoid passing `() => handler(item)` in the render loop. Instead, pass `handler` and let the child component bind `item` or pass `item` to the handler.
