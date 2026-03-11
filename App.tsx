@@ -124,6 +124,11 @@ const App: React.FC = () => {
     }
   };
 
+  // ⚡ BOLT OPTIMIZATION: Memoize total cart count to prevent recalculation on every render
+  const cartCount = React.useMemo(() => {
+    return cart.reduce((sum, item) => sum + item.quantity, 0);
+  }, [cart]);
+
   const catProps = (name: string, slug: string) => ({
     categoryName: name,
     categorySlug: slug,
@@ -265,7 +270,7 @@ const App: React.FC = () => {
         onModeToggle={handleModeToggle}
         setView={setCurrentView}
         wishlistCount={wishlist.length}
-        cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)}
+        cartCount={cartCount}
       />
 
       <main className="container mx-auto px-6 py-12 max-w-7xl flex-1 animate-fade-in relative">
