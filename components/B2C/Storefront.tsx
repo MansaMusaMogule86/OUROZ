@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { DUMMY_PRODUCTS, CATEGORIES } from '../../constants';
 import { Product } from '../../types';
 
@@ -124,7 +124,7 @@ const B2CStorefront: React.FC<StorefrontProps> = ({ wishlist, onToggleWishlist, 
           <ArtifactCard 
             key={product.id}
             product={product} 
-            onAdd={() => onToggleWishlist(product)} 
+            onToggleWishlist={onToggleWishlist}
             isInAmud={isInAmud(product.id)}
           />
         ))}
@@ -135,9 +135,12 @@ const B2CStorefront: React.FC<StorefrontProps> = ({ wishlist, onToggleWishlist, 
 
 const ArtifactCard: React.FC<{ 
   product: Product; 
-  onAdd: () => void;
+  onToggleWishlist: (product: Product) => void;
   isInAmud: boolean;
-}> = ({ product, onAdd, isInAmud }) => (
+}> = memo(({ product, onToggleWishlist, isInAmud }) => {
+  const onAdd = () => onToggleWishlist(product);
+
+  return (
   <div className="group card-vogue bg-white/40 glass-vogue overflow-hidden hover:-translate-y-8 shadow-gold-ambient border-gold/10 hover:border-gold/50 flex flex-col h-full active:scale-[0.98]">
     <div className="relative h-[500px] overflow-hidden shrink-0 bg-sahara/50">
       <img src={product.image} className="w-full h-full object-cover grayscale-[0.3] contrast-125 transition-all duration-1000 group-hover:scale-110 group-hover:grayscale-0" alt={product.name} />
@@ -169,6 +172,7 @@ const ArtifactCard: React.FC<{
       </div>
     </div>
   </div>
-);
+  );
+});
 
 export default B2CStorefront;

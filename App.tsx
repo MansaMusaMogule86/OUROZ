@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { UserRole, User, ApplicationStatus, Product, ViewType } from './types';
 import Navigation from './components/Navigation';
 import LandingPage from './components/LandingPage';
@@ -67,7 +67,7 @@ const App: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentView]);
 
-  const toggleAmudVault = (product: Product) => {
+  const toggleAmudVault = useCallback((product: Product) => {
     setWishlist(prev => {
       const exists = prev.find(p => p.id === product.id);
       if (!exists) {
@@ -76,7 +76,7 @@ const App: React.FC = () => {
       }
       return exists ? prev.filter(p => p.id !== product.id) : [...prev, product];
     });
-  };
+  }, []);
 
   const addToCart = (product: Product, qty: number = 1) => {
     setCart(prev => {
