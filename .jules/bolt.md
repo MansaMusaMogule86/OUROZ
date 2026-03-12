@@ -19,3 +19,17 @@ This journal tracks critical learnings and performance patterns specific to the 
 Should be wrapped with `React.memo()` to prevent unnecessary re-renders.
 
 ---
+
+## 2026-02-04 - Search Bar Debouncing and Array Mapping Iterations
+
+**Learning:** In `B2CStorefront.tsx`, the primary `filtered` array (used to render `ArtifactCard` components) recalculated dynamically on every key stroke within the search bar, because `searchTerm` was directly linked. Additionally, `wishlist.some(...)` iterated over the entire `wishlist` array per `ArtifactCard` rendering, compounding the UI thread blocking on each typing event. Lastly, the static initialization array `retailProducts` was generated on every render rather than globally defined.
+
+**Action:**
+- Moved the `retailProducts` derivation to the file-level scope (now `RETAIL_PRODUCTS`), since its source `DUMMY_PRODUCTS` never mutates over the lifetime of the application.
+- Added a `debouncedSearch` state variable tied to `searchTerm` with a 300ms `useEffect` delay, enabling users to type smoothly without triggering React commits to child components.
+- Wrapped the dynamic array filtering in a `useMemo` block that explicitly watches `displayProducts`, `debouncedSearch`, and `activeCategory`.
+- Upgraded the `isInAmud` checking mechanism to use a `useMemo` instantiated `Set` instead of array `.some()`, pivoting the time complexity per child from O(n) to O(1).
+
+**Pattern for Future:** Any high-frequency search input triggering complex iteration across a large dataset needs independent debounced state paired with `useMemo` to throttle array processing. Arrays utilized for continuous item lookups in mapping paths should be converted to Sets outside the loop map scope. Global static mappings from constant sources must live outside the function component scope.
+
+---

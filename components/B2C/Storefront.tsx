@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { DUMMY_PRODUCTS, CATEGORIES } from '../../constants';
 import { Product } from '../../types';
 
@@ -9,25 +9,40 @@ interface StorefrontProps {
   onNavigateToCategory: (slug: string) => void;
 }
 
+const RETAIL_PRODUCTS = DUMMY_PRODUCTS.filter(p => p.retailEnabled && p.is_active);
+
 const B2CStorefront: React.FC<StorefrontProps> = ({ wishlist, onToggleWishlist, onNavigateToCategory }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [showWishlistOnly, setShowWishlistOnly] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  const retailProducts = DUMMY_PRODUCTS.filter(p => p.retailEnabled && p.is_active);
-  const displayProducts = showWishlistOnly ? wishlist : retailProducts;
+  // Debounce search term to prevent excessive filtering during rapid typing
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
-  const filtered = displayProducts.filter(p => {
-    const term = searchTerm.toLowerCase();
-    const matchesSearch = p.name.toLowerCase().includes(term) || 
-                          p.category.toLowerCase().includes(term) ||
-                          p.search_tags.toLowerCase().includes(term);
-    const matchesCategory = activeCategory === 'all' || p.category_slug === activeCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const displayProducts = showWishlistOnly ? wishlist : RETAIL_PRODUCTS;
 
-  const isInAmud = (productId: string) => wishlist.some(p => p.id === productId);
+  // Memoize filtered products to prevent re-calculating on unrelated re-renders
+  const filtered = useMemo(() => {
+    const term = debouncedSearch.toLowerCase();
+    return displayProducts.filter(p => {
+      const matchesSearch = !term || p.name.toLowerCase().includes(term) ||
+                            p.category.toLowerCase().includes(term) ||
+                            p.search_tags.toLowerCase().includes(term);
+      const matchesCategory = activeCategory === 'all' || p.category_slug === activeCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [displayProducts, debouncedSearch, activeCategory]);
+
+  // Memoize wishlist Set for O(1) lookup
+  const amudSet = useMemo(() => new Set(wishlist.map(p => p.id)), [wishlist]);
+  const isInAmud = (productId: string) => amudSet.has(productId);
 
   return (
     <div className="space-y-32 animate-fade-in pt-10">
