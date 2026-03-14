@@ -19,3 +19,7 @@ This journal tracks critical learnings and performance patterns specific to the 
 Should be wrapped with `React.memo()` to prevent unnecessary re-renders.
 
 ---
+## 2026-02-04 - Debounced Local State for Search Inputs
+
+**Learning:** In `BuyerMarketplace.tsx`, lifting search state (`filters.search`) directly into the `MarketplaceHeader` input `onChange` caused the entire page (including pagination and product grid) to re-render on every keystroke, causing layout thrashing and high CPU usage.
+**Action:** Implemented a "Debounced Local State" pattern. Kept the input's immediate `value` and `onChange` in a local `useState` within `MarketplaceHeader`, and used a `useEffect` with a `setTimeout` (300ms) to sync the value back to the parent `onSearchChange` prop. To avoid overwriting user typing, only synced from parent to local state on external resets (e.g., clearing filters).
