@@ -1,195 +1,84 @@
 /**
- * OUROZ — CategoryShowcase
- * Premium staggered category section with editorial asymmetric layout.
- * Server component — renders the architectural grid.
- * Individual cards are client components for hover interactions.
+ * CategoryShowcase – "Explore by Category" section
+ * 6 glassmorphism cards in 3×2 grid, each with image, label, product count.
+ * Left decorative Moroccan arch overlaps.
  */
+'use client';
 
-import CategoryCard from './CategoryCard';
-import type { CategoryCardData } from './CategoryCard';
+import Link from 'next/link';
 
-// ─── Curated Category Data ─────────────────────────────────────────────────
-// In production, this comes from the database via fetchCategories().
-// The showcase always displays exactly 10 curated categories.
-// Each image should be a high-resolution editorial photograph.
-
-const SHOWCASE_CATEGORIES: CategoryCardData[] = [
-    {
-        slug: 'spices-rare-seasonings',
-        title: 'Spices & Rare Seasonings',
-        subtitle: 'Heritage blends from Fez and Meknes',
-        imageUrl: '/images/categories/spices.jpg',
-        featured: true,
-    },
-    {
-        slug: 'single-origin-olive-oils',
-        title: 'Single Origin Olive Oils',
-        subtitle: 'Cold-pressed from certified groves',
-        imageUrl: '/images/categories/olive-oils.jpg',
-    },
-    {
-        slug: 'couscous-heritage-grains',
-        title: 'Couscous & Heritage Grains',
-        subtitle: 'Hand-rolled by master artisans',
-        imageUrl: '/images/categories/couscous.jpg',
-    },
-    {
-        slug: 'artisan-patisserie',
-        title: 'Artisan Pâtisserie & Sweets',
-        subtitle: 'Traditional recipes, pure ingredients',
-        imageUrl: '/images/categories/patisserie.jpg',
-    },
-    {
-        slug: 'ceremonial-tea-coffee',
-        title: 'Ceremonial Tea & Coffee',
-        subtitle: 'Curated origins for ritual service',
-        imageUrl: '/images/categories/tea-coffee.jpg',
-    },
-    {
-        slug: 'argan-botanical-beauty',
-        title: 'Argan & Botanical Beauty',
-        subtitle: 'Cold-pressed argan and rare botanicals',
-        imageUrl: '/images/categories/argan.jpg',
-    },
-    {
-        slug: 'handwoven-textiles',
-        title: 'Handwoven Textiles',
-        subtitle: 'Atlas looms, Berber tradition',
-        imageUrl: '/images/categories/textiles.jpg',
-    },
-    {
-        slug: 'moroccan-ceramics',
-        title: 'Moroccan Ceramics',
-        subtitle: 'Fez and Safi master workshops',
-        imageUrl: '/images/categories/ceramics.jpg',
-    },
-    {
-        slug: 'atlantic-seafood',
-        title: 'Atlantic Tuna & Seafood',
-        subtitle: 'Port-direct, premium catch',
-        imageUrl: '/images/categories/seafood.jpg',
-    },
-    {
-        slug: 'curated-grocery',
-        title: 'Curated Grocery Essentials',
-        subtitle: 'The everyday, elevated',
-        imageUrl: '/images/categories/grocery.jpg',
-    },
+const CATEGORIES = [
+  { slug: 'spices', label: 'Spices', count: 48, image: '/images/categories/spices.jpg' },
+  { slug: 'oils', label: 'Oils', count: 24, image: '/images/categories/oils.jpg' },
+  { slug: 'tea-coffee', label: 'Tea & Coffee', count: 32, image: '/images/categories/tea-coffee.jpg' },
+  { slug: 'olives', label: 'Olives', count: 18, image: '/images/categories/olives.jpg' },
+  { slug: 'ceramics', label: 'Ceramics', count: 12, image: '/images/categories/ceramics.jpg' },
+  { slug: 'pantry', label: 'Pantry Goods', count: 36, image: '/images/categories/pantry.jpg' },
 ];
 
-interface CategoryShowcaseProps {
-    /** Override with database categories if available */
-    categories?: CategoryCardData[];
-    /** Section title */
-    title?: string;
+interface Props {
+  title?: string;
 }
 
-export default function CategoryShowcase({
-    categories,
-    title = 'The Collection',
-}: CategoryShowcaseProps) {
-    const cats = categories && categories.length >= 6 ? categories : SHOWCASE_CATEGORIES;
+export default function CategoryShowcase({ title }: Props) {
+  return (
+    <section className="relative py-16 lg:py-24">
+      <div className="max-w-[1100px] mx-auto px-6 lg:px-14">
+        {/* Section heading */}
+        <div className="text-center mb-12 lg:mb-16">
+          <h2
+            className="text-3xl lg:text-5xl font-heading text-[var(--color-charcoal)] mb-3"
+            style={{ fontWeight: 300, letterSpacing: '0.06em' }}
+          >
+            {title || 'Explore by Category'}
+          </h2>
+          <div className="w-14 h-px bg-[var(--color-gold)]/25 mx-auto mb-4" />
+          <p
+            className="text-sm text-[var(--color-charcoal)]/40 max-w-md mx-auto"
+            style={{ fontWeight: 400, lineHeight: 1.8 }}
+          >
+            Curated collections from Morocco&apos;s finest producers
+          </p>
+        </div>
 
-    // Split into architectural rows
-    const featured = cats[0];     // Row 1 left — dominant
-    const stackTop = cats[1];     // Row 1 right top
-    const stackBot = cats[2];     // Row 1 right bottom
-    const row2 = cats.slice(3, 6);  // Row 2 — three even cards
-    const row3 = cats.slice(6, 10); // Row 3 — remaining four (optional)
+        {/* 3×2 grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
+          {CATEGORIES.map((cat) => (
+            <Link
+              key={cat.slug}
+              href={`/shop?category=${cat.slug}`}
+              className="group relative rounded-2xl lg:rounded-3xl overflow-hidden aspect-[4/5] lg:aspect-[3/4]"
+            >
+              {/* Background image */}
+              <div className="absolute inset-0 bg-[var(--color-sahara-dark)]">
+                <img
+                  src={cat.image}
+                  alt={cat.label}
+                  className="w-full h-full object-cover opacity-80 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700"
+                />
+              </div>
 
-    return (
-        <section className="relative" style={{ paddingTop: '100px', paddingBottom: '80px' }}>
-            <div className="max-w-[1200px] mx-auto px-5 sm:px-10">
+              {/* Gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
 
-                {/* Section Header */}
-                <div className="text-center mb-16">
-                    <h2
-                        className="text-[var(--color-charcoal)]"
-                        style={{
-                            fontFamily: 'var(--font-serif, "Playfair Display", serif)',
-                            fontSize: 'clamp(1.75rem, 4vw, 2.75rem)',
-                            fontWeight: 300,
-                            letterSpacing: '0.08em',
-                        }}
-                    >
-                        {title}
-                    </h2>
-                    <div
-                        className="mx-auto mt-5"
-                        style={{
-                            width: '40px',
-                            height: '1px',
-                            backgroundColor: 'rgba(212, 175, 55, 0.3)',
-                        }}
-                    />
+              {/* Glass card at bottom */}
+              <div className="absolute bottom-0 left-0 right-0 p-4 lg:p-5">
+                <div className="glass-card rounded-xl lg:rounded-2xl px-4 py-3 lg:px-5 lg:py-4">
+                  <p
+                    className="text-white text-sm lg:text-base font-heading tracking-wide"
+                    style={{ fontWeight: 500 }}
+                  >
+                    {cat.label}
+                  </p>
+                  <p className="text-white/50 text-[10px] lg:text-xs font-body mt-0.5">
+                    {cat.count} Products
+                  </p>
                 </div>
-
-                {/* ── Row 1: Featured + Stacked Pair ────────────────────── */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                    {/* Featured (left, dominant) */}
-                    <CategoryCard
-                        data={featured}
-                        className="h-[320px] md:h-[380px] lg:h-[420px]"
-                        priority
-                    />
-
-                    {/* Right stack */}
-                    <div className="grid grid-cols-1 gap-5">
-                        <CategoryCard
-                            data={stackTop}
-                            className="h-[260px] md:h-[200px] lg:h-[200px]"
-                        />
-                        <CategoryCard
-                            data={stackBot}
-                            className="h-[260px] md:h-[200px] lg:h-[200px]"
-                        />
-                    </div>
-                </div>
-
-                {/* ── Row 2: Three Even Cards ───────────────────────────── */}
-                {row2.length > 0 && (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
-                        {row2.map(cat => (
-                            <CategoryCard
-                                key={cat.slug}
-                                data={cat}
-                                className="h-[260px] md:h-[320px]"
-                            />
-                        ))}
-                    </div>
-                )}
-
-                {/* ── Row 3: Four Remaining (optional) ─────────────────── */}
-                {row3.length > 0 && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-5">
-                        {row3.map(cat => (
-                            <CategoryCard
-                                key={cat.slug}
-                                data={cat}
-                                className="h-[240px] md:h-[280px]"
-                            />
-                        ))}
-                    </div>
-                )}
-
-                {/* ── Browse All Link ──────────────────────────────────── */}
-                <div className="text-center mt-14">
-                    <a
-                        href="/shop"
-                        className="inline-block text-[var(--color-charcoal)]/40 hover:text-[var(--color-charcoal)]/80 transition-colors duration-400"
-                        style={{
-                            fontSize: '11px',
-                            fontWeight: 600,
-                            letterSpacing: '0.25em',
-                            textTransform: 'uppercase',
-                            borderBottom: '1px solid rgba(212, 175, 55, 0.2)',
-                            paddingBottom: '4px',
-                        }}
-                    >
-                        Browse All Categories
-                    </a>
-                </div>
-            </div>
-        </section>
-    );
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
 }

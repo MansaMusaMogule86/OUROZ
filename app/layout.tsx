@@ -1,46 +1,51 @@
-/**
- * OUROZ – Root App Layout
- * Wraps the entire app with global providers.
- * Preserves existing design system from globals.css.
- */
-
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Cormorant_Garamond, Manrope } from 'next/font/google';
 import { LangProvider } from '@/contexts/LangContext';
 import { CartProvider } from '@/contexts/CartContext';
 import CartDrawer from '@/components/shop/CartDrawer';
 import { ToastProvider } from '@/components/ui/Toast';
 
-// Reuse existing globals (design system tokens)
-import '../ouroz-engine/src/app/globals.css';
+import './globals.css';
 
-const geistSans = Geist({ variable: '--font-sans', subsets: ['latin'] });
-const geistMono = Geist_Mono({ variable: '--font-mono', subsets: ['latin'] });
+const cormorant = Cormorant_Garamond({
+  variable: '--font-heading',
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  display: 'swap',
+});
+
+const manrope = Manrope({
+  variable: '--font-body',
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
-    title: 'OUROZ – Authentic Moroccan Products in Dubai',
-    description: 'Premium Moroccan groceries, spices and artisan products delivered in Dubai. Shop retail or wholesale.',
-    openGraph: {
-        siteName: 'OUROZ',
-        locale: 'en_AE',
-        alternateLocale: ['ar_AE', 'fr_FR'],
-    },
+  title: 'OUROZ – Moroccan Provisions from the Atlas',
+  description: 'Premium Moroccan spices, oils, teas, and artisan goods sourced directly from cooperatives and family producers across Morocco.',
+  openGraph: {
+    siteName: 'OUROZ',
+    locale: 'en_AE',
+    alternateLocale: ['ar_AE', 'fr_FR'],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-    return (
-        <html lang="en" suppressHydrationWarning>
-            <body className={`${geistSans.variable} ${geistMono.variable} bg-[var(--color-sahara)] antialiased`}>
-                <LangProvider>
-                    <CartProvider>
-                        <ToastProvider>
-                            {children}
-                            {/* Cart drawer lives here so it's always accessible */}
-                            <CartDrawer />
-                        </ToastProvider>
-                    </CartProvider>
-                </LangProvider>
-            </body>
-        </html>
-    );
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${cormorant.variable} ${manrope.variable} antialiased font-body`}
+      >
+        <LangProvider>
+          <CartProvider>
+            <ToastProvider>
+              {children}
+              <CartDrawer />
+            </ToastProvider>
+          </CartProvider>
+        </LangProvider>
+      </body>
+    </html>
+  );
 }

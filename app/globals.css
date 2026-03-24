@@ -1,0 +1,126 @@
+@import "tailwindcss";
+
+/* ── OUROZ Design Tokens ──────────────────────────────────────── */
+
+:root {
+  /* Brand palette */
+  --color-sahara: #F5E6D3;
+  --color-sahara-light: #FAF3EB;
+  --color-sahara-dark: #E8D5BE;
+  --color-charcoal: #2A2016;
+  --color-charcoal-soft: #3D3328;
+  --color-gold: #C9A84C;
+  --color-gold-bright: #D4AF37;
+  --color-gold-muted: #8B7332;
+  --color-terracotta: #C85A5A;
+  --color-burgundy: #8B1A4A;
+  --color-cream: #FDF8F0;
+
+  /* Glass card tokens */
+  --glass-bg: rgba(255, 255, 255, 0.25);
+  --glass-border: rgba(255, 255, 255, 0.35);
+  --glass-blur: 15px;
+
+  /* Typography */
+  --font-heading: 'Cormorant Garamond', 'Georgia', serif;
+  --font-body: 'Manrope', 'system-ui', sans-serif;
+
+  /* Spacing */
+  --section-padding: clamp(3rem, 6vw, 6rem);
+}
+
+/* ── Base Resets ──────────────────────────────────────────────── */
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    font-family: var(--font-body);
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--color-sahara);
+    color: var(--color-charcoal);
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: var(--color-charcoal);
+    color: var(--color-sahara);
+  }
+}
+
+/* ── Utility Classes ─────────────────────────────────────────── */
+
+@layer utilities {
+  .font-heading {
+    font-family: var(--font-heading);
+  }
+
+  .font-body {
+    font-family: var(--font-body);
+  }
+
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 10s linear infinite;
+  }
+}
+
+/* ── Animations ──────────────────────────────────────────────── */
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
