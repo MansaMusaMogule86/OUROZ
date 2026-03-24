@@ -23,7 +23,28 @@
       "Bash(grep:*)",
       "Bash(xargs cat:*)",
       "Bash(for file in app/*/page.tsx)",
-      "Bash(do dirname \"$file\":*)"
+      "Bash(do dirname \"$file\":*)",
+      "Bash(node:*)",
+      "Bash(npm test)",
+      "Skill(firecrawl-scrape)",
+      "Skill(firecrawl-scrape:*)",
+      "Bash(curl:*)",
+      "Bash(firecrawl map:*)",
+      "Bash(./node_modules/.bin/next build:*)",
+      "Bash(./node_modules/.bin/tsc:*)",
+      "Bash(timeout 15 ./node_modules/.bin/next dev:*)",
+      "Bash(git rm:*)",
+      "Bash(git add:*)",
+      "Bash(git reset:*)",
+      "Bash(git commit:*)",
+      "Bash(git show:*)",
+      "Bash(while read commit)",
+      "Bash(do git ls-tree -r --name-only \"$commit\" -- \".next/\")",
+      "Bash(for commit in 8400b66 f3cf2dc)",
+      "Bash(do echo \"=== $commit ===\")"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\mehdi\\.claude\\skills\\ui-styling"
     ]
   }
 }

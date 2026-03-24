@@ -1,3 +1,21 @@
+# Dependencies
+node_modules
+
+# Next.js build output
+.next
+out
+
+# Build artifacts
+dist
+dist-ssr
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.local
+.env.*.local
+server/.env
+
 # Logs
 logs
 *.log
@@ -7,25 +25,24 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Next.js build output
-.next
-
-# Environment files with secrets
-.env
-server/.env
-
-# Editor directories and files
+# Editor / OS
 .vscode/*
 !.vscode/extensions.json
 .idea
 .DS_Store
+desktop.ini
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+Thumbs.db
+
+# Temp / debug files
+build-log.txt
+git-log.txt
+git-status.txt
+git_status_clean.txt
+recent.json
+recent_files.json
+*.local
