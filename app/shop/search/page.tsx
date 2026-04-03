@@ -27,6 +27,17 @@ interface SearchResult {
     }[];
 }
 
+interface GridProduct {
+    id: string;
+    name: string;
+    slug: string;
+    price: number;
+    compare_at_price?: number;
+    currency: string;
+    image_url?: string;
+    in_stock: boolean;
+}
+
 export default function SearchPage() {
     const [results, setResults] = useState<SearchResult[]>([]);
     const [loading, setLoading] = useState(false);
@@ -67,22 +78,17 @@ export default function SearchPage() {
     }, []);
 
     // Adapt results for ProductGrid format
-    const gridProducts = results.map(p => {
+    const gridProducts: GridProduct[] = results.map(p => {
         const v = p.variants?.find(v => v.is_active) ?? p.variants?.[0];
         return {
             id: p.id,
             name: p.name,
             slug: p.slug,
-            base_price: p.base_price,
-            compare_price: p.compare_price,
-            image_urls: p.image_urls ?? [],
-            category_name: p.category?.name ?? null,
-            brand_name: p.brand?.name ?? null,
-            default_variant_id: v?.id ?? '',
-            retail_price: v?.retail_price ?? p.base_price,
-            stock_quantity: v ? p.variants.reduce((s, vv) => s + vv.stock_quantity, 0) : 0,
-            lowest_tier_price: v?.price_tiers?.length ? Math.min(...v.price_tiers.map(t => t.price)) : null,
-            is_wholesale_enabled: (v?.price_tiers?.length ?? 0) > 0,
+            price: v?.retail_price ?? p.base_price,
+            compare_at_price: p.compare_price ?? undefined,
+            currency: 'AED',
+            image_url: p.image_urls?.[0],
+            in_stock: (v?.stock_quantity ?? 0) > 0,
         };
     });
 
@@ -116,7 +122,7 @@ export default function SearchPage() {
             ) : results.length > 0 ? (
                 <div>
                     <p className="text-sm text-stone-500 mb-4">{results.length} result{results.length !== 1 ? 's' : ''} for &ldquo;{query}&rdquo;</p>
-                    <ProductGrid products={gridProducts as never[]} mode="retail" />
+                    <ProductGrid products={gridProducts} />
                 </div>
             ) : (
                 <div className="bg-white rounded-2xl p-12 text-center border border-stone-100">

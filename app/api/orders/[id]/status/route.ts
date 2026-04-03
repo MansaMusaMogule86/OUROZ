@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase';
+import { createServerClient } from '@/lib/supabase-server';
 import { sendShippingUpdateEmail } from '@/services/emailService';
 
 const VALID_TRANSITIONS: Record<string, string[]> = {
@@ -30,7 +30,7 @@ export async function PATCH(
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const supabase = createServerClient();
+        const supabase = await createServerClient();
         const token = authHeader.slice(7);
         const { data: { user }, error: authError } = await supabase.auth.getUser(token);
 

@@ -1,84 +1,106 @@
 /**
- * CategoryShowcase – "Explore by Category" section
- * 6 glassmorphism cards in 3×2 grid, each with image, label, product count.
- * Left decorative Moroccan arch overlaps.
+ * CategoryShowcase — "Explore by Category" section.
+ * Horizontal scroll of light portrait cards matching OUROZ reference design:
+ * food photo fills upper portion, category label at bottom in dark serif.
  */
 'use client';
 
 import Link from 'next/link';
 
 const CATEGORIES = [
-  { slug: 'spices', label: 'Spices', count: 48, image: '/images/categories/spices.jpg' },
-  { slug: 'oils', label: 'Oils', count: 24, image: '/images/categories/oils.jpg' },
-  { slug: 'tea-coffee', label: 'Tea & Coffee', count: 32, image: '/images/categories/tea-coffee.jpg' },
-  { slug: 'olives', label: 'Olives', count: 18, image: '/images/categories/olives.jpg' },
-  { slug: 'ceramics', label: 'Ceramics', count: 12, image: '/images/categories/ceramics.jpg' },
-  { slug: 'pantry', label: 'Pantry Goods', count: 36, image: '/images/categories/pantry.jpg' },
+  { slug: 'spices',             label: 'Spices',       image: '/images/categories/spices.jpg' },
+  { slug: 'oils',               label: 'Oils',         image: '/images/categories/oils.jpg' },
+  { slug: 'tea-herbal',         label: 'Tea',          image: '/images/categories/tea-coffee.jpg' },
+  { slug: 'olives-moroccan',    label: 'Olives',       image: '/images/categories/olives.jpg' },
+  { slug: 'kitchenware',        label: 'Ceramics',     image: '/images/categories/ceramics.jpg' },
+  { slug: 'condiments-pantry',  label: 'Pantry Goods', image: '/images/categories/pantry.jpg' },
 ];
 
-interface Props {
-  title?: string;
-}
-
-export default function CategoryShowcase({ title }: Props) {
+export default function CategoryShowcase() {
   return (
     <section className="relative py-16 lg:py-24">
-      <div className="max-w-[1100px] mx-auto px-6 lg:px-14">
-        {/* Section heading */}
-        <div className="text-center mb-12 lg:mb-16">
-          <h2
-            className="text-3xl lg:text-5xl font-heading text-[var(--color-charcoal)] mb-3"
-            style={{ fontWeight: 300, letterSpacing: '0.06em' }}
-          >
-            {title || 'Explore by Category'}
-          </h2>
-          <div className="w-14 h-px bg-[var(--color-gold)]/25 mx-auto mb-4" />
-          <p
-            className="text-sm text-[var(--color-charcoal)]/40 max-w-md mx-auto"
-            style={{ fontWeight: 400, lineHeight: 1.8 }}
-          >
-            Curated collections from Morocco&apos;s finest producers
-          </p>
-        </div>
 
-        {/* 3×2 grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
+      {/* Heading */}
+      <div className="text-center mb-12 px-6">
+        <h2
+          className="font-heading text-[var(--color-charcoal)] text-3xl lg:text-5xl mb-3"
+          style={{ fontWeight: 300 }}
+        >
+          Explore by Category
+        </h2>
+        <p
+          className="font-body text-sm max-w-sm mx-auto"
+          style={{ color: 'rgba(42,32,22,0.42)', lineHeight: 1.75 }}
+        >
+          Discover authentic Moroccan spices, oils, teas, and artisan goods
+        </p>
+      </div>
+
+      {/* Horizontal scroll strip */}
+      <div className="overflow-x-auto scrollbar-hide">
+        <div className="flex gap-4 px-6 lg:px-14 pb-2" style={{ width: 'max-content' }}>
           {CATEGORIES.map((cat) => (
             <Link
               key={cat.slug}
-              href={`/shop?category=${cat.slug}`}
-              className="group relative rounded-2xl lg:rounded-3xl overflow-hidden aspect-[4/5] lg:aspect-[3/4]"
+              href={`/shop/${cat.slug}`}
+              className="group flex-shrink-0 w-[155px] lg:w-[185px]"
             >
-              {/* Background image */}
-              <div className="absolute inset-0 bg-[var(--color-sahara-dark)]">
-                <img
-                  src={cat.image}
-                  alt={cat.label}
-                  className="w-full h-full object-cover opacity-80 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700"
-                />
-              </div>
+              <div
+                className="rounded-2xl overflow-hidden relative"
+                style={{
+                  aspectRatio: '2 / 3',
+                  background: 'rgba(232,213,190,0.52)',
+                  backdropFilter: 'blur(10px)',
+                  WebkitBackdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255,255,255,0.52)',
+                  boxShadow: '0 4px 20px rgba(42,32,22,0.07)',
+                }}
+              >
+                {/* Photo — fills top ~78% */}
+                <div className="absolute inset-x-0 top-0" style={{ bottom: 52 }}>
+                  <img
+                    src={cat.image}
+                    alt={cat.label}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                  />
+                  {/* Gentle fade at bottom for label readability */}
+                  <div
+                    className="absolute inset-x-0 bottom-0 h-10 pointer-events-none"
+                    style={{ background: 'linear-gradient(to top, rgba(232,213,190,0.45), transparent)' }}
+                  />
+                </div>
 
-              {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
-
-              {/* Glass card at bottom */}
-              <div className="absolute bottom-0 left-0 right-0 p-4 lg:p-5">
-                <div className="glass-card rounded-xl lg:rounded-2xl px-4 py-3 lg:px-5 lg:py-4">
-                  <p
-                    className="text-white text-sm lg:text-base font-heading tracking-wide"
-                    style={{ fontWeight: 500 }}
+                {/* Label */}
+                <div
+                  className="absolute inset-x-0 bottom-0 h-[52px] flex items-center px-4"
+                  style={{
+                    background: 'rgba(232,213,190,0.88)',
+                    backdropFilter: 'blur(4px)',
+                    WebkitBackdropFilter: 'blur(4px)',
+                    borderTop: '1px solid rgba(255,255,255,0.52)',
+                  }}
+                >
+                  <span
+                    className="font-heading text-[var(--color-charcoal)]"
+                    style={{ fontSize: 15, fontWeight: 500 }}
                   >
                     {cat.label}
-                  </p>
-                  <p className="text-white/50 text-[10px] lg:text-xs font-body mt-0.5">
-                    {cat.count} Products
-                  </p>
+                  </span>
                 </div>
               </div>
             </Link>
           ))}
         </div>
       </div>
+
+      {/* Tagline */}
+      <p
+        className="text-center font-body text-xs mt-10 px-6"
+        style={{ color: 'rgba(42,32,22,0.35)', lineHeight: 1.75 }}
+      >
+        Directly sourced from Moroccan cooperatives. Trusted supply for Dubai homes and restaurants.
+      </p>
+
     </section>
   );
 }

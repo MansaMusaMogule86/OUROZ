@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase';
+import { createServerClient } from '@/lib/supabase-server';
 
 /**
  * OAuth callback handler.
@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     const returnTo = searchParams.get('return') || '/shop';
 
     if (code) {
-        const supabase = createServerClient();
+        const supabase = await createServerClient();
         await supabase.auth.exchangeCodeForSession(code);
     }
 

@@ -1,12 +1,11 @@
 /**
  * OUROZ – Homepage
- * 4 sections matching reference screenshots:
- *   1. Hero – centered ⵣ, "MOROCCAN PROVISIONS FROM THE ATLAS"
- *   2. Explore by Category – 6 glassmorphism cards, 3×2 grid
- *   3. Atlas hero – "From the Atlas, to your table." with floating product cards
- *   4. Featured Products – horizontal scrolling strip
+ * Section order matching reference screenshots:
+ *   1. Brand Entry  — centered ⵣ + OUROZ + tagline + CTAs
+ *   2. Atlas Hero   — "From the Atlas, to your table." + floating product cards
+ *   3. Categories   — horizontal scroll of portrait cards
+ *   4. Featured     — horizontal scroll of light product cards
  *   5. Footer
- * Decorative background: arch, watermark, grain, dunes via OurozBackground
  */
 
 import Link from 'next/link';
@@ -14,18 +13,94 @@ import OurozHeader from '@/components/shared/OurozHeader';
 import OurozBackground from '@/components/shared/OurozBackground';
 import CategoryShowcase from '@/components/shop/CategoryShowcase';
 
-const FEATURED_PRODUCTS = [
-  { id: '1', name: 'Premium Saffron', origin: 'Taliouine', price: 199, image: '/images/products/saffron.jpg' },
-  { id: '2', name: 'Argan Oil', origin: 'Essaouira', price: 149, image: '/images/products/argan-oil.jpg' },
-  { id: '3', name: 'Ras el Hanout', origin: 'Fez', price: 89, image: '/images/products/spice-mix.jpg' },
-  { id: '4', name: 'Tagine Pot', origin: 'Safi', price: 159, image: '/images/products/tagine.jpg' },
-  { id: '5', name: 'Handcrafted Saffron', origin: 'Atlas', price: 225, image: '/images/products/saffron-craft.jpg' },
-  { id: '6', name: 'Olive Oil', origin: 'Meknes', price: 119, image: '/images/products/olive-oil.jpg' },
+const ATLAS_CARDS = [
+  { id: '1', name: 'Royal Moroccan Tea', subtitle: 'Handcrafted in Morocco', price: 149, compare: 399, image: '/images/products/moroccan-tea.jpg' },
+  { id: '2', name: 'Traditional Silver Teapot', subtitle: 'Handcrafted in Morocco', price: 149, compare: 349, image: '/images/products/silver-teapot.jpg' },
 ];
+
+const FEATURED_PRODUCTS = [
+  { id: '1', name: 'Moroccan Argan',         price: 159, compare: 349, image: '/images/products/argan-tagine.jpg' },
+  { id: '2', name: 'Moroccan Argan Oil',      price: 149, compare: 349, image: '/images/products/argan-oil.jpg' },
+  { id: '3', name: 'Premium Saffron',         price: 199, compare: 349, image: '/images/products/saffron.jpg' },
+  { id: '4', name: 'Handmade Argan Oil',      price: 299, compare: 349, image: '/images/products/argan-craft.jpg' },
+  { id: '5', name: 'Handmade Saffron',        price: 225, compare: 349, image: '/images/products/saffron-craft.jpg' },
+  { id: '6', name: 'Moroccan Spice Jute',     price: 149, compare: 349, image: '/images/products/spice-jute.jpg' },
+];
+
+/* ── Reusable light glass card used in both hero and featured strip ── */
+function LightCard({
+  image, name, subtitle, price, compare, href,
+}: {
+  image: string; name: string; subtitle?: string;
+  price: number; compare?: number; href: string;
+}) {
+  return (
+    <Link href={href} className="group block flex-shrink-0">
+      <div
+        className="rounded-2xl overflow-hidden flex flex-col aspect-[3/4]"
+        style={{
+          background: 'rgba(253,248,240,0.68)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          border: '1px solid rgba(255,255,255,0.55)',
+          boxShadow: '0 4px 24px rgba(42,32,22,0.09)',
+        }}
+      >
+        {/* Image — flex-1 so it takes remaining space above the info panel */}
+        <div className="flex-1 flex items-center justify-center px-5 pt-5 pb-2 min-h-0">
+          <img
+            src={image}
+            alt={name}
+            className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-[1.04]"
+            style={{ filter: 'drop-shadow(0 8px 18px rgba(42,32,22,0.13))' }}
+            onError={(e) => { (e.target as HTMLImageElement).style.opacity = '0'; }}
+          />
+        </div>
+        {/* Info */}
+        <div
+          className="px-4 pb-4 pt-3 shrink-0"
+          style={{
+            borderTop: '1px solid rgba(255,255,255,0.65)',
+            background: 'rgba(253,248,240,0.82)',
+          }}
+        >
+          <p
+            className="font-heading text-[var(--color-charcoal)] leading-snug line-clamp-1 mb-0.5"
+            style={{ fontSize: 14, fontWeight: 500 }}
+          >
+            {name}
+          </p>
+          {subtitle && (
+            <p
+              className="font-body mb-1.5"
+              style={{ fontSize: 10, color: 'rgba(42,32,22,0.38)', letterSpacing: '0.02em' }}
+            >
+              {subtitle}
+            </p>
+          )}
+          <div className="flex items-baseline gap-1.5 flex-wrap">
+            <span className="font-body font-bold" style={{ fontSize: 14, color: 'var(--color-charcoal)' }}>
+              {price}
+            </span>
+            <span className="font-body" style={{ fontSize: 10, color: 'rgba(42,32,22,0.45)' }}>
+              AED
+            </span>
+            {compare && compare > price && (
+              <span className="font-body line-through" style={{ fontSize: 10, color: 'rgba(42,32,22,0.28)' }}>
+                {compare}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+}
 
 export default function HomePage() {
   return (
     <div className="relative min-h-screen bg-[var(--color-sahara)] overflow-hidden">
+
       {/* Decorative background layers */}
       <OurozBackground showArch showWatermark showDunes />
 
@@ -33,12 +108,13 @@ export default function HomePage() {
       <OurozHeader />
 
       {/* ═══════════════════════════════════════════════════════════════
-          SECTION 1 — Hero: centered ⵣ + brand name + tagline
+          SECTION 1 — Brand Entry
+          Centered ⵣ symbol, OUROZ wordmark, tagline, CTAs
           ═══════════════════════════════════════════════════════════════ */}
-      <section className="relative z-10 flex flex-col items-center justify-center min-h-[85vh] px-6 pt-8">
-        {/* ⵣ symbol in circle */}
+      <section className="relative z-10 flex flex-col items-center justify-center min-h-[88vh] px-6 pt-8">
+
+        {/* ⵣ symbol in glowing circle */}
         <div className="relative mb-6">
-          {/* Subtle glow ring */}
           <div
             className="absolute -inset-6 rounded-full opacity-15 blur-xl pointer-events-none"
             style={{
@@ -47,13 +123,17 @@ export default function HomePage() {
             }}
           />
           <div
-            className="relative w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-b from-white/80 to-white/40 flex items-center justify-center border border-[var(--color-gold)]/[0.08]"
-            style={{ boxShadow: '0 20px 60px -12px rgba(0,0,0,0.06)' }}
+            className="relative w-32 h-32 md:w-40 md:h-40 rounded-full flex items-center justify-center"
+            style={{
+              background: 'linear-gradient(160deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.45) 100%)',
+              boxShadow: '0 20px 60px -12px rgba(42,32,22,0.10)',
+              border: '1px solid rgba(255,255,255,0.6)',
+            }}
           >
             <span
               className="text-[5rem] md:text-[6rem] leading-none select-none font-heading"
               style={{
-                background: 'linear-gradient(180deg, #C85A5A 0%, #A63D3D 40%, #8B1A4A 100%)',
+                background: 'linear-gradient(160deg, #C85A5A 0%, #A63D3D 40%, #C9A84C 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}
@@ -65,239 +145,168 @@ export default function HomePage() {
 
         {/* OUROZ wordmark */}
         <h1
-          className="text-6xl md:text-[10rem] font-heading text-[var(--color-charcoal)] leading-[0.85] tracking-[-0.03em] text-center mb-3"
-          style={{ fontWeight: 300 }}
+          className="font-heading text-[var(--color-charcoal)] text-center leading-none tracking-[-0.02em] mb-4"
+          style={{ fontSize: 'clamp(4rem, 12vw, 9rem)', fontWeight: 700 }}
         >
           OUROZ
         </h1>
 
-        {/* Subtitle */}
+        {/* Tagline */}
         <p
-          className="text-sm md:text-base font-heading italic tracking-[0.25em] uppercase text-center mb-8"
-          style={{ color: 'rgba(212, 175, 55, 0.5)', fontWeight: 300 }}
+          className="font-body text-center uppercase tracking-[0.28em] mb-10"
+          style={{ fontSize: '0.7rem', color: 'rgba(201,168,76,0.75)', fontWeight: 600 }}
         >
-          The Amazigh Source
-        </p>
-
-        {/* Main tagline */}
-        <h2
-          className="text-lg md:text-2xl font-heading text-[var(--color-charcoal)]/60 leading-relaxed tracking-wide text-center max-w-xl mb-4"
-          style={{ fontWeight: 300 }}
-        >
-          MOROCCAN PROVISIONS FROM THE ATLAS
-        </h2>
-        <p
-          className="text-xs md:text-sm text-[var(--color-charcoal)]/30 text-center max-w-md leading-relaxed mb-10"
-          style={{ fontWeight: 400 }}
-        >
-          Premium spices, oils, teas, and artisan goods sourced directly from cooperatives and family producers across Morocco.
+          Moroccan Provisions from{' '}
+          <span style={{ fontSize: '0.6rem', textTransform: 'lowercase', letterSpacing: '0.1em' }}>
+            the
+          </span>{' '}
+          Atlas
         </p>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center w-full max-w-md mb-12">
+        <div className="flex flex-col sm:flex-row gap-3 justify-center w-full max-w-xs">
           <Link
             href="/shop"
-            className="flex-1 py-3.5 px-8 border-2 border-[var(--color-charcoal)]/12 text-[var(--color-charcoal)] rounded-full text-center font-body font-bold text-[10px] uppercase tracking-[0.3em] hover:bg-[var(--color-charcoal)] hover:text-[var(--color-sahara)] hover:border-[var(--color-charcoal)] transition-all duration-500"
+            className="flex-1 py-3.5 px-7 bg-[var(--color-charcoal)] text-[var(--color-sahara)] rounded-full text-center font-body font-bold text-[10px] uppercase tracking-[0.25em] hover:bg-[var(--color-charcoal)]/85 transition-all duration-400"
           >
-            Shop Now
+            Explore Products
           </Link>
           <Link
-            href="/wholesale/apply"
-            className="flex-1 py-3.5 px-8 bg-[var(--color-charcoal)] text-[var(--color-sahara)] rounded-full text-center font-body font-bold text-[10px] uppercase tracking-[0.3em] hover:bg-[var(--color-charcoal)]/85 transition-all duration-500"
+            href="/auth/login"
+            className="flex-1 py-3.5 px-7 border border-[var(--color-charcoal)]/20 text-[var(--color-charcoal)] rounded-full text-center font-body font-bold text-[10px] uppercase tracking-[0.25em] hover:bg-[var(--color-charcoal)] hover:text-[var(--color-sahara)] hover:border-[var(--color-charcoal)] transition-all duration-400"
           >
-            Wholesale Pricing
+            Supplier Login
           </Link>
-        </div>
-
-        {/* Trust badges */}
-        <div className="flex gap-8 md:gap-12 justify-center flex-wrap">
-          {['Verified Lineage', 'Direct Logistics', 'Sourcing Branding'].map((badge) => (
-            <span
-              key={badge}
-              className="text-[8px] md:text-[9px] font-bold uppercase tracking-[0.3em] pb-1 border-b border-[var(--color-gold)]/12"
-              style={{ color: 'rgba(212, 175, 55, 0.35)' }}
-            >
-              {badge}
-            </span>
-          ))}
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          SECTION 2 — Explore by Category (6 cards, 3×2 grid)
-          ═══════════════════════════════════════════════════════════════ */}
-      <div className="relative z-10">
-        <CategoryShowcase />
-      </div>
-
-      {/* ═══════════════════════════════════════════════════════════════
-          SECTION 3 — "From the Atlas, to your table."
-          Split layout: left text, right floating product cards
+          SECTION 2 — "From the Atlas, to your table."
+          Left: text + CTAs | Right: 2 floating product cards
           ═══════════════════════════════════════════════════════════════ */}
       <section className="relative z-10 py-20 lg:py-32">
         <div className="max-w-[1200px] mx-auto px-6 lg:px-14">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            {/* Left: text */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+
+            {/* Left — text */}
             <div>
-              <p
-                className="text-[10px] font-body font-bold uppercase tracking-[0.3em] mb-4"
-                style={{ color: 'rgba(212, 175, 55, 0.5)' }}
-              >
-                OUR STORY
-              </p>
               <h2
-                className="text-4xl lg:text-6xl font-heading text-[var(--color-charcoal)] leading-[1.1] mb-6"
-                style={{ fontWeight: 300, letterSpacing: '0.02em' }}
+                className="font-heading text-[var(--color-charcoal)] leading-[1.08] mb-6"
+                style={{ fontSize: 'clamp(2.2rem, 5vw, 4rem)', fontWeight: 400, letterSpacing: '0.01em' }}
               >
                 From the Atlas,
                 <br />
                 to your table.
               </h2>
               <p
-                className="text-sm lg:text-base text-[var(--color-charcoal)]/40 leading-relaxed max-w-md mb-8"
-                style={{ fontWeight: 400, lineHeight: 1.8 }}
+                className="font-body text-sm lg:text-base mb-8 max-w-md"
+                style={{ color: 'rgba(42,32,22,0.44)', lineHeight: 1.85, fontWeight: 400 }}
               >
-                Every product in our collection is sourced directly from Moroccan cooperatives and family producers. We preserve authentic methods while ensuring the highest quality reaches your kitchen.
+                Curated Moroccan provisions—spices, oils, teas, and artisan goods sourced directly from cooperatives and family producers across Morocco.
               </p>
-              <Link
-                href="/about"
-                className="inline-block py-3 px-8 border-2 border-[var(--color-charcoal)]/12 text-[var(--color-charcoal)] rounded-full font-body font-bold text-[10px] uppercase tracking-[0.3em] hover:bg-[var(--color-charcoal)] hover:text-[var(--color-sahara)] hover:border-[var(--color-charcoal)] transition-all duration-500"
-              >
-                Learn More
-              </Link>
-            </div>
-
-            {/* Right: floating product cards in stacked layout */}
-            <div className="relative h-[420px] lg:h-[520px]">
-              {/* Card 1 — top left */}
-              <div
-                className="absolute left-0 top-0 w-[200px] lg:w-[240px] rounded-2xl overflow-hidden shadow-xl"
-                style={{ animation: 'float 6s ease-in-out infinite' }}
-              >
-                <div className="aspect-[3/4] bg-[var(--color-sahara-dark)] relative">
-                  <img
-                    src="/images/products/saffron.jpg"
-                    alt="Premium Saffron"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/40 to-transparent p-4">
-                    <p className="text-white text-sm font-heading" style={{ fontWeight: 500 }}>
-                      Premium Saffron
-                    </p>
-                    <p className="text-white/50 text-xs">Taliouine</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Card 2 — center right */}
-              <div
-                className="absolute right-0 top-[60px] lg:top-[40px] w-[200px] lg:w-[240px] rounded-2xl overflow-hidden shadow-xl"
-                style={{ animation: 'float 6s ease-in-out infinite 1s' }}
-              >
-                <div className="aspect-[3/4] bg-[var(--color-sahara-dark)] relative">
-                  <img
-                    src="/images/products/argan-oil.jpg"
-                    alt="Argan Oil"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/40 to-transparent p-4">
-                    <p className="text-white text-sm font-heading" style={{ fontWeight: 500 }}>
-                      Argan Oil
-                    </p>
-                    <p className="text-white/50 text-xs">Essaouira</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Card 3 — bottom center */}
-              <div
-                className="absolute left-[60px] lg:left-[80px] bottom-0 w-[200px] lg:w-[240px] rounded-2xl overflow-hidden shadow-xl"
-                style={{ animation: 'float 6s ease-in-out infinite 2s' }}
-              >
-                <div className="aspect-[3/4] bg-[var(--color-sahara-dark)] relative">
-                  <img
-                    src="/images/products/tagine.jpg"
-                    alt="Tagine Pot"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/40 to-transparent p-4">
-                    <p className="text-white text-sm font-heading" style={{ fontWeight: 500 }}>
-                      Tagine Pot
-                    </p>
-                    <p className="text-white/50 text-xs">Safi</p>
-                  </div>
-                </div>
+              <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs">
+                <Link
+                  href="/shop"
+                  className="flex-1 py-3 px-7 bg-[var(--color-charcoal)] text-[var(--color-sahara)] rounded-full text-center font-body font-bold text-[10px] uppercase tracking-[0.25em] hover:bg-[var(--color-charcoal)]/85 transition-all duration-400"
+                >
+                  Explore Products
+                </Link>
+                <Link
+                  href="/auth/login"
+                  className="flex-1 py-3 px-7 border border-[var(--color-charcoal)]/20 text-[var(--color-charcoal)] rounded-full text-center font-body font-bold text-[10px] uppercase tracking-[0.25em] hover:bg-[var(--color-charcoal)] hover:text-[var(--color-sahara)] transition-all duration-400"
+                >
+                  Supplier Login
+                </Link>
               </div>
             </div>
+
+            {/* Right — 2 floating product cards */}
+            <div className="flex gap-4 justify-center lg:justify-end items-start pt-6 lg:pt-0">
+              <div className="w-[150px] lg:w-[175px] animate-float mt-8">
+                <LightCard
+                  href="/shop"
+                  image={ATLAS_CARDS[0].image}
+                  name={ATLAS_CARDS[0].name}
+                  subtitle={ATLAS_CARDS[0].subtitle}
+                  price={ATLAS_CARDS[0].price}
+                  compare={ATLAS_CARDS[0].compare}
+                />
+              </div>
+              <div className="w-[150px] lg:w-[175px]" style={{ animation: 'float 6s ease-in-out infinite 1.2s' }}>
+                <LightCard
+                  href="/shop"
+                  image={ATLAS_CARDS[1].image}
+                  name={ATLAS_CARDS[1].name}
+                  subtitle={ATLAS_CARDS[1].subtitle}
+                  price={ATLAS_CARDS[1].price}
+                  compare={ATLAS_CARDS[1].compare}
+                />
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          SECTION 4 — Featured Products – horizontal scroll strip
+          SECTION 3 — Explore by Category
+          Horizontal scroll of light portrait category cards
+          ═══════════════════════════════════════════════════════════════ */}
+      <div className="relative z-10">
+        <CategoryShowcase />
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          SECTION 4 — Featured Products
+          Horizontal scroll of light glass product cards
           ═══════════════════════════════════════════════════════════════ */}
       <section className="relative z-10 py-16 lg:py-24">
+
+        {/* Heading */}
         <div className="max-w-[1200px] mx-auto px-6 lg:px-14 mb-10">
-          <div className="flex items-end justify-between">
-            <div>
-              <p
-                className="text-[10px] font-body font-bold uppercase tracking-[0.3em] mb-3"
-                style={{ color: 'rgba(212, 175, 55, 0.5)' }}
-              >
-                HANDPICKED
-              </p>
-              <h2
-                className="text-3xl lg:text-4xl font-heading text-[var(--color-charcoal)]"
-                style={{ fontWeight: 300, letterSpacing: '0.04em' }}
-              >
-                Featured Products
-              </h2>
-            </div>
-            <Link
-              href="/shop"
-              className="hidden sm:block text-[10px] font-body font-bold uppercase tracking-[0.25em] text-[var(--color-charcoal)]/40 hover:text-[var(--color-charcoal)] transition-colors pb-1 border-b border-[var(--color-charcoal)]/10"
+          <div className="text-center">
+            <h2
+              className="font-heading text-[var(--color-charcoal)] mb-3"
+              style={{ fontSize: 'clamp(2rem, 4.5vw, 3.5rem)', fontWeight: 300 }}
             >
-              View All
-            </Link>
+              Featured Products
+            </h2>
+            <p
+              className="font-body text-sm max-w-md mx-auto"
+              style={{ color: 'rgba(42,32,22,0.42)', lineHeight: 1.75 }}
+            >
+              Handpicked Moroccan provisions—spices, oils, teas, and artisan goods sourced
+              directly from cooperatives and family producers across Morocco.
+            </p>
           </div>
         </div>
 
         {/* Horizontal scroll */}
-        <div className="overflow-x-auto scrollbar-hide pb-4">
-          <div className="flex gap-5 px-6 lg:px-14 w-max">
-            {FEATURED_PRODUCTS.map((product) => (
-              <Link
-                key={product.id}
-                href={`/shop/${product.id}`}
-                className="group flex-shrink-0 w-[220px] lg:w-[260px]"
-              >
-                {/* Image */}
-                <div className="aspect-[3/4] rounded-2xl overflow-hidden bg-[var(--color-sahara-dark)] mb-3 relative">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                  {/* Hover overlay */}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-500" />
-                </div>
-
-                {/* Info */}
-                <p
-                  className="text-sm font-heading text-[var(--color-charcoal)] mb-0.5"
-                  style={{ fontWeight: 500 }}
-                >
-                  {product.name}
-                </p>
-                <p className="text-[11px] text-[var(--color-charcoal)]/30 font-body mb-1">
-                  {product.origin}
-                </p>
-                <p className="text-sm font-body font-semibold text-[var(--color-charcoal)]">
-                  AED {product.price}
-                </p>
-              </Link>
+        <div className="overflow-x-auto scrollbar-hide">
+          <div className="flex gap-4 px-6 lg:px-14 pb-2" style={{ width: 'max-content' }}>
+            {FEATURED_PRODUCTS.map((p) => (
+              <div key={p.id} className="w-[180px] lg:w-[210px]">
+                <LightCard
+                  href={`/product/${p.id}`}
+                  image={p.image}
+                  name={p.name}
+                  subtitle="Handcrafted in Morocco"
+                  price={p.price}
+                  compare={p.compare}
+                />
+              </div>
             ))}
           </div>
+        </div>
+
+        {/* View All */}
+        <div className="text-center mt-10">
+          <Link
+            href="/shop"
+            className="inline-block py-3 px-8 border border-[var(--color-charcoal)]/18 text-[var(--color-charcoal)] rounded-full font-body font-bold text-[10px] uppercase tracking-[0.25em] hover:bg-[var(--color-charcoal)] hover:text-[var(--color-sahara)] transition-all duration-400"
+          >
+            View All Products
+          </Link>
         </div>
       </section>
 
@@ -313,10 +322,7 @@ export default function HomePage() {
                 <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center">
                   <span className="text-sm font-heading text-[var(--color-gold)]/50">&#11581;</span>
                 </div>
-                <span
-                  className="text-sm font-heading tracking-[0.3em] uppercase text-white/60"
-                  style={{ fontWeight: 400 }}
-                >
+                <span className="text-sm font-heading tracking-[0.3em] uppercase text-white/60" style={{ fontWeight: 400 }}>
                   OUROZ
                 </span>
               </div>
@@ -327,63 +333,29 @@ export default function HomePage() {
 
             {/* Shop */}
             <div>
-              <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/50 mb-4">
-                Shop
-              </h4>
+              <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/50 mb-4">Shop</h4>
               <ul className="space-y-2.5 text-xs">
-                <li>
-                  <Link href="/shop" className="hover:text-white/70 transition-colors">
-                    All Products
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/wholesale/apply" className="hover:text-white/70 transition-colors">
-                    Wholesale
-                  </Link>
-                </li>
+                <li><Link href="/shop" className="hover:text-white/70 transition-colors">All Products</Link></li>
+                <li><Link href="/wholesale/apply" className="hover:text-white/70 transition-colors">Wholesale</Link></li>
               </ul>
             </div>
 
             {/* Sell */}
             <div>
-              <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/50 mb-4">
-                Sell
-              </h4>
+              <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/50 mb-4">Sell</h4>
               <ul className="space-y-2.5 text-xs">
-                <li>
-                  <Link href="/supplier/register" className="hover:text-white/70 transition-colors">
-                    Become a Supplier
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/suppliers" className="hover:text-white/70 transition-colors">
-                    Supplier Directory
-                  </Link>
-                </li>
+                <li><Link href="/supplier/register" className="hover:text-white/70 transition-colors">Become a Supplier</Link></li>
+                <li><Link href="/suppliers" className="hover:text-white/70 transition-colors">Supplier Directory</Link></li>
               </ul>
             </div>
 
             {/* Account */}
             <div>
-              <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/50 mb-4">
-                Account
-              </h4>
+              <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/50 mb-4">Account</h4>
               <ul className="space-y-2.5 text-xs">
-                <li>
-                  <Link href="/auth/login" className="hover:text-white/70 transition-colors">
-                    Sign In
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/about" className="hover:text-white/70 transition-colors">
-                    About
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/journal" className="hover:text-white/70 transition-colors">
-                    Journal
-                  </Link>
-                </li>
+                <li><Link href="/auth/login" className="hover:text-white/70 transition-colors">Sign In</Link></li>
+                <li><Link href="/about" className="hover:text-white/70 transition-colors">About</Link></li>
+                <li><Link href="/journal" className="hover:text-white/70 transition-colors">Journal</Link></li>
               </ul>
             </div>
           </div>
@@ -393,6 +365,7 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+
     </div>
   );
 }

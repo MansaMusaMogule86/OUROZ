@@ -11,7 +11,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase';
+import { createServerClient } from '@/lib/supabase-server';
 
 // ---------------------------------------------------------------------------
 // GET — health probe
@@ -29,7 +29,7 @@ export async function GET(): Promise<NextResponse> {
 // ---------------------------------------------------------------------------
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
 
   // ── 1. Auth gate ─────────────────────────────────────────────────────────
 
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 // Authorization helper
 // ---------------------------------------------------------------------------
 
-type SupabaseClient = ReturnType<typeof createServerClient>;
+type SupabaseClient = Awaited<ReturnType<typeof createServerClient>>;
 
 async function isAuthorized(
   request: NextRequest,
