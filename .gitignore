@@ -46,3 +46,5 @@ git_status_clean.txt
 recent.json
 recent_files.json
 *.local
+
+ouroz-clone/
