@@ -21,7 +21,10 @@ const manrope = Manrope({
   display: 'swap',
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://ouroz.com';
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: 'OUROZ – Moroccan Provisions from the Atlas',
   description: 'Premium Moroccan spices, oils, teas, and artisan goods sourced directly from cooperatives and family producers across Morocco.',
   icons: {
