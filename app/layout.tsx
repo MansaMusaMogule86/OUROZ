@@ -24,10 +24,16 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   title: 'OUROZ – Moroccan Provisions from the Atlas',
   description: 'Premium Moroccan spices, oils, teas, and artisan goods sourced directly from cooperatives and family producers across Morocco.',
+  icons: {
+    icon: '/logo/logo.png',
+    shortcut: '/logo/logo.png',
+    apple: '/logo/logo.png',
+  },
   openGraph: {
     siteName: 'OUROZ',
     locale: 'en_AE',
     alternateLocale: ['ar_AE', 'fr_FR'],
+    images: ['/logo/logo.png'],
   },
 };
 

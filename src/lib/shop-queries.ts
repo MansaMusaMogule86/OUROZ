@@ -173,6 +173,7 @@ export async function getProductCards({
        base_price, compare_at_price, currency,
        origin, in_stock, badge,
        category:categories!category_id(slug),
+       brand:brands!brand_id(slug),
        images:product_images(url, position)`,
       { count: 'exact' }
     )
@@ -217,6 +218,7 @@ export async function getProductCards({
       currency: row.currency ?? 'AED',
       image_url: imgs[0]?.url,
       category_slug: (row.category as unknown as { slug: string } | null)?.slug,
+      brand_slug: (row.brand as unknown as { slug: string } | null)?.slug,
       origin: row.origin ?? undefined,
       in_stock: row.in_stock,
       badge: row.badge ?? undefined,

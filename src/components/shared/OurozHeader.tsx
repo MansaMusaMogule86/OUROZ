@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import OurozMark from './OurozMark';
 
 const NAV_LINKS = [
   { href: '/shop', label: 'SHOP' },
@@ -14,8 +15,8 @@ export default function OurozHeader() {
       <div className="max-w-[1440px] mx-auto flex items-center justify-between px-8 lg:px-14 h-[72px]">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 shrink-0">
-          <div className="w-8 h-8 rounded-full border border-[var(--color-charcoal)]/15 flex items-center justify-center">
-            <span className="text-[13px] leading-none translate-y-[-1px]">&#11581;</span>
+          <div className="w-8 h-8 rounded-full border border-[var(--color-charcoal)]/15 flex items-center justify-center overflow-hidden bg-white">
+            <img src="/logo/logo.png" alt="OUROZ" className="w-[82%] h-[82%] object-contain" draggable={false} />
           </div>
           <span
             className="text-[15px] font-heading tracking-[0.35em] uppercase"

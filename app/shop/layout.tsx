@@ -25,8 +25,8 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
             {/* ── NAVBAR ─────────────────────────────────────────────── */}
             <header className="sticky top-0 w-full z-[60] flex items-center justify-between px-10 md:px-14 py-6 bg-[#F5E6D3]/80 backdrop-blur-md border-b border-[#1A1A1A]/5">
                 <Link href="/" className="flex items-center gap-4">
-                    <div className="w-9 h-9 rounded-full border border-[#1A1A1A]/20 flex items-center justify-center">
-                        <span className="text-[14px] font-sans text-[#1A1A1A] transform translate-y-[-1px]">ⵣ</span>
+                    <div className="w-9 h-9 rounded-full border border-[#1A1A1A]/20 flex items-center justify-center overflow-hidden bg-white">
+                        <img src="/logo/logo.png" alt="OUROZ" className="w-[80%] h-[80%] object-contain" draggable={false} />
                     </div>
                     <span className="text-xl font-serif tracking-[0.3em] text-[#1A1A1A] uppercase font-bold">OUROZ</span>
                 </Link>

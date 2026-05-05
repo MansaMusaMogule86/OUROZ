@@ -63,6 +63,8 @@ export interface ProductCard {
   image_url?: string;
   /** Slug of the direct category this product belongs to */
   category_slug?: string;
+  /** Slug of the brand this product belongs to */
+  brand_slug?: string;
   origin?: string;
   in_stock: boolean;
   badge?: string;

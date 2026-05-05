@@ -60,8 +60,8 @@ export default function SupplierLayout({ children }: { children: React.ReactNode
                 <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-6">
                         <Link href="/shop" className="flex items-center gap-2">
-                            <div className="w-8 h-8 bg-gradient-to-br from-amber-600 to-amber-800 rounded-full flex items-center justify-center">
-                                <span className="text-white font-serif text-sm">ⵣ</span>
+                            <div className="w-8 h-8 rounded-full overflow-hidden bg-white border border-amber-700/20 flex items-center justify-center">
+                                <img src="/logo/logo.png" alt="OUROZ" className="w-[82%] h-[82%] object-contain" draggable={false} />
                             </div>
                             <span className="font-serif font-bold text-lg">OUROZ</span>
                         </Link>

@@ -22,17 +22,12 @@ export default function TradeSidebar({ collapsed = false, onToggle }: TradeSideb
         >
             {/* ── Logo ──────────────────────────────────────────── */}
             <div className="flex items-center gap-3 px-5 h-16 border-b border-white/8 flex-shrink-0">
-                <span
-                    className="text-xl"
-                    style={{
-                        fontFamily: 'serif',
-                        background: 'linear-gradient(165deg, #D4AF37, #C4A882)',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                    }}
-                >
-                    ⵣ
-                </span>
+                <img
+                    src="/logo/logo.png"
+                    alt="OUROZ"
+                    className="w-7 h-7 object-contain rounded-full bg-white/10 p-0.5"
+                    draggable={false}
+                />
                 {!collapsed && (
                     <span
                         className="text-xs tracking-[0.25em] font-semibold text-stone-300"

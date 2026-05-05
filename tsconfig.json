@@ -38,14 +38,6 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
-    "src/legacy-pages/**",
-    "src/AppRouter.tsx",
-    "App.tsx",
-    "index.tsx",
-    "components/**",
-    "services/geminiService.ts",
-    "src/config/api.routes.ts",
-    "server/**"
+    "node_modules"
   ]
 }

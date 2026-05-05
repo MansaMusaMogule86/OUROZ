@@ -12,10 +12,10 @@ export default async function ShopPage() {
     const cookieStore = await cookies();
     const lang = (cookieStore.get('ouroz_lang')?.value ?? 'en') as LangCode;
 
-    const [categories, brands, { products }] = await Promise.all([
+    const [categories, brands, { products, total }] = await Promise.all([
         fetchCategories(),
         fetchBrands(),
-        getProductCards({ lang, limit: 8, sortBy: 'newest' }),
+        getProductCards({ lang, limit: 1000, sortBy: 'newest' }),
     ]);
 
     const headline = {
@@ -61,6 +61,7 @@ export default async function ShopPage() {
                     brands={brands}
                     lang={lang}
                     initialProducts={products}
+                    totalCount={total}
                 />
             </Suspense>
 

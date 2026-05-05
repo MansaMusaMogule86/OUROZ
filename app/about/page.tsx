@@ -30,11 +30,7 @@ export default function AboutPage() {
             <section className="max-w-5xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
                     <div className="md:col-span-5 aspect-[4/5] overflow-hidden bg-gradient-to-br from-[var(--color-imperial)]/[0.06] to-[var(--color-gold)]/[0.06] flex items-center justify-center">
-                        <span className="text-[8rem] font-serif select-none" style={{
-                            background: 'linear-gradient(180deg, #C85A5A 0%, #8B1A4A 100%)',
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                        }}>ⵣ</span>
+                        <img src="/logo/logo.png" alt="OUROZ" className="w-[60%] h-[60%] object-contain select-none" draggable={false} />
                     </div>
                     <div className="md:col-span-7 space-y-6">
                         <p className="text-[9px] font-medium uppercase tracking-[0.3em] text-[var(--color-clay)]">

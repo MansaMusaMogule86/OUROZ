@@ -49,8 +49,8 @@ export default function PasswordResetPage() {
             <div className="w-full max-w-md space-y-8">
                 <div className="text-center">
                     <Link href="/shop" className="inline-flex items-center gap-2">
-                        <div className="w-10 h-10 bg-gradient-to-br from-amber-600 to-amber-800 rounded-full flex items-center justify-center">
-                            <span className="text-white font-serif text-lg">ⵣ</span>
+                        <div className="w-10 h-10 rounded-full overflow-hidden bg-white border border-amber-700/20 flex items-center justify-center">
+                            <img src="/logo/logo.png" alt="OUROZ" className="w-[82%] h-[82%] object-contain" draggable={false} />
                         </div>
                         <span className="text-2xl font-serif font-bold text-[var(--color-charcoal)]">OUROZ</span>
                     </Link>

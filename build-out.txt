@@ -1,0 +1,94 @@
+
+> ouroz@1.0.0 build
+> next build
+
+▲ Next.js 16.1.6 (Turbopack)
+- Environments: .env
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+✓ Compiled successfully in 3.3s
+  Running TypeScript ...
+  Collecting page data using 15 workers ...
+  Generating static pages using 15 workers (0/56) ...
+⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+  Generating static pages using 15 workers (14/56) 
+  Generating static pages using 15 workers (28/56) 
+  Generating static pages using 15 workers (42/56) 
+✓ Generating static pages using 15 workers (56/56) in 513.4ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ƒ /
+├ ○ /_not-found
+├ ○ /about
+├ ○ /account
+├ ○ /admin
+├ ○ /admin/brands
+├ ○ /admin/businesses
+├ ○ /admin/credit
+├ ○ /admin/invoices
+├ ○ /admin/products
+├ ○ /admin/risk
+├ ○ /admin/subscriptions
+├ ○ /admin/suppliers
+├ ƒ /api/admin/cron/credit-health
+├ ƒ /api/contact
+├ ƒ /api/orders/[id]/status
+├ ƒ /api/stripe/create-intent
+├ ƒ /api/stripe/webhook
+├ ƒ /api/upload
+├ ƒ /auth/callback
+├ ○ /auth/login
+├ ○ /auth/password-reset
+├ ○ /auth/signup
+├ ○ /auth/update-password
+├ ○ /business/apply
+├ ○ /business/checkout
+├ ○ /business/checkout/success
+├ ○ /business/dashboard
+├ ○ /business/invoices
+├ ○ /business/subscription
+├ ○ /cart
+├ ○ /checkout
+├ ƒ /checkout/success
+├ ○ /contact
+├ ○ /faq
+├ ƒ /home
+├ ○ /journal
+├ ƒ /journal/[slug]
+├ ƒ /orders/[orderNumber]
+├ ƒ /product/[productSlug]
+├ ƒ /shop
+├ ƒ /shop/[categorySlug]
+├ ƒ /shop/search
+├ ○ /supplier/dashboard
+├ ○ /supplier/orders
+├ ○ /supplier/products
+├ ○ /supplier/products/new
+├ ○ /supplier/register
+├ ○ /suppliers
+├ ○ /trade
+├ ○ /trade/compliance
+├ ○ /trade/deals
+├ ƒ /trade/deals/[id]
+├ ○ /trade/logistics
+├ ƒ /trade/logistics/[id]
+├ ○ /trade/prices
+├ ○ /trade/rfq
+├ ƒ /trade/rfq/[id]
+├ ○ /trade/rfq/new
+├ ○ /trade/suppliers
+├ ƒ /trade/suppliers/[id]
+├ ○ /wholesale/apply
+├ ○ /wholesale/dashboard
+└ ○ /wishlist
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

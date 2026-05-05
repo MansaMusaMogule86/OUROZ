@@ -12,20 +12,16 @@ import Link from 'next/link';
 import OurozHeader from '@/components/shared/OurozHeader';
 import OurozBackground from '@/components/shared/OurozBackground';
 import CategoryShowcase from '@/components/shop/CategoryShowcase';
+import { createServerClient } from '@/lib/supabase-server';
 
-const ATLAS_CARDS = [
-  { id: '1', name: 'Royal Moroccan Tea', subtitle: 'Handcrafted in Morocco', price: 149, compare: 399, image: '/images/products/moroccan-tea.jpg' },
-  { id: '2', name: 'Traditional Silver Teapot', subtitle: 'Handcrafted in Morocco', price: 149, compare: 349, image: '/images/products/silver-teapot.jpg' },
-];
-
-const FEATURED_PRODUCTS = [
-  { id: '1', name: 'Moroccan Argan',         price: 159, compare: 349, image: '/images/products/argan-tagine.jpg' },
-  { id: '2', name: 'Moroccan Argan Oil',      price: 149, compare: 349, image: '/images/products/argan-oil.jpg' },
-  { id: '3', name: 'Premium Saffron',         price: 199, compare: 349, image: '/images/products/saffron.jpg' },
-  { id: '4', name: 'Handmade Argan Oil',      price: 299, compare: 349, image: '/images/products/argan-craft.jpg' },
-  { id: '5', name: 'Handmade Saffron',        price: 225, compare: 349, image: '/images/products/saffron-craft.jpg' },
-  { id: '6', name: 'Moroccan Spice Jute',     price: 149, compare: 349, image: '/images/products/spice-jute.jpg' },
-];
+type HomepageProduct = {
+  id: string;
+  slug: string;
+  name: string;
+  base_price: number;
+  compare_at_price: number | null;
+  images: { url: string; position: number }[];
+};
 
 /* ── Reusable light glass card used in both hero and featured strip ── */
 function LightCard({
@@ -53,7 +49,6 @@ function LightCard({
             alt={name}
             className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-[1.04]"
             style={{ filter: 'drop-shadow(0 8px 18px rgba(42,32,22,0.13))' }}
-            onError={(e) => { (e.target as HTMLImageElement).style.opacity = '0'; }}
           />
         </div>
         {/* Info */}
@@ -97,12 +92,41 @@ function LightCard({
   );
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  const supabase = await createServerClient();
+
+  const [{ data: featuredRaw }, { data: atlasRaw }] = await Promise.all([
+    supabase
+      .from('products')
+      .select('id, slug, name, base_price, compare_at_price, images:product_images(url, position)')
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(6),
+    supabase
+      .from('products')
+      .select('id, slug, name, base_price, compare_at_price, images:product_images(url, position)')
+      .eq('is_active', true)
+      .eq('badge', 'bestseller')
+      .order('created_at', { ascending: false })
+      .limit(2),
+  ]);
+
+  const featuredProducts: HomepageProduct[] = (featuredRaw ?? []) as HomepageProduct[];
+  // Fall back to first 2 featured products if no bestseller-badged items exist
+  const atlasCards: HomepageProduct[] = ((atlasRaw?.length ?? 0) >= 2
+    ? atlasRaw
+    : featuredProducts.slice(0, 2)) as HomepageProduct[];
+
+  function getPrimaryImage(product: HomepageProduct): string {
+    const sorted = [...(product.images ?? [])].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+    return sorted[0]?.url ?? '/images/placeholder-product.jpg';
+  }
+
   return (
     <div className="relative min-h-screen bg-[var(--color-sahara)] overflow-hidden">
 
       {/* Decorative background layers */}
-      <OurozBackground showArch showWatermark showDunes />
+      <OurozBackground showArch={false} showWatermark showDunes={false} />
 
       {/* Header */}
       <OurozHeader />
@@ -123,23 +147,19 @@ export default function HomePage() {
             }}
           />
           <div
-            className="relative w-32 h-32 md:w-40 md:h-40 rounded-full flex items-center justify-center"
+            className="relative w-32 h-32 md:w-40 md:h-40 rounded-full flex items-center justify-center overflow-hidden"
             style={{
               background: 'linear-gradient(160deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.45) 100%)',
               boxShadow: '0 20px 60px -12px rgba(42,32,22,0.10)',
               border: '1px solid rgba(255,255,255,0.6)',
             }}
           >
-            <span
-              className="text-[5rem] md:text-[6rem] leading-none select-none font-heading"
-              style={{
-                background: 'linear-gradient(160deg, #C85A5A 0%, #A63D3D 40%, #C9A84C 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              &#11581;
-            </span>
+            <img
+              src="/logo/logo.png"
+              alt="OUROZ"
+              className="w-[78%] h-[78%] object-contain select-none"
+              draggable={false}
+            />
           </div>
         </div>
 
@@ -222,26 +242,30 @@ export default function HomePage() {
 
             {/* Right — 2 floating product cards */}
             <div className="flex gap-4 justify-center lg:justify-end items-start pt-6 lg:pt-0">
-              <div className="w-[150px] lg:w-[175px] animate-float mt-8">
-                <LightCard
-                  href="/shop"
-                  image={ATLAS_CARDS[0].image}
-                  name={ATLAS_CARDS[0].name}
-                  subtitle={ATLAS_CARDS[0].subtitle}
-                  price={ATLAS_CARDS[0].price}
-                  compare={ATLAS_CARDS[0].compare}
-                />
-              </div>
-              <div className="w-[150px] lg:w-[175px]" style={{ animation: 'float 6s ease-in-out infinite 1.2s' }}>
-                <LightCard
-                  href="/shop"
-                  image={ATLAS_CARDS[1].image}
-                  name={ATLAS_CARDS[1].name}
-                  subtitle={ATLAS_CARDS[1].subtitle}
-                  price={ATLAS_CARDS[1].price}
-                  compare={ATLAS_CARDS[1].compare}
-                />
-              </div>
+              {atlasCards[0] && (
+                <div className="w-[150px] lg:w-[175px] animate-float mt-8">
+                  <LightCard
+                    href={`/product/${atlasCards[0].slug}`}
+                    image={getPrimaryImage(atlasCards[0])}
+                    name={atlasCards[0].name}
+                    subtitle="Handcrafted in Morocco"
+                    price={atlasCards[0].base_price}
+                    compare={atlasCards[0].compare_at_price ?? undefined}
+                  />
+                </div>
+              )}
+              {atlasCards[1] && (
+                <div className="w-[150px] lg:w-[175px]" style={{ animation: 'float 6s ease-in-out infinite 1.2s' }}>
+                  <LightCard
+                    href={`/product/${atlasCards[1].slug}`}
+                    image={getPrimaryImage(atlasCards[1])}
+                    name={atlasCards[1].name}
+                    subtitle="Handcrafted in Morocco"
+                    price={atlasCards[1].base_price}
+                    compare={atlasCards[1].compare_at_price ?? undefined}
+                  />
+                </div>
+              )}
             </div>
 
           </div>
@@ -284,15 +308,15 @@ export default function HomePage() {
         {/* Horizontal scroll */}
         <div className="overflow-x-auto scrollbar-hide">
           <div className="flex gap-4 px-6 lg:px-14 pb-2" style={{ width: 'max-content' }}>
-            {FEATURED_PRODUCTS.map((p) => (
+            {featuredProducts.map((p) => (
               <div key={p.id} className="w-[180px] lg:w-[210px]">
                 <LightCard
-                  href={`/product/${p.id}`}
-                  image={p.image}
+                  href={`/product/${p.slug}`}
+                  image={getPrimaryImage(p)}
                   name={p.name}
                   subtitle="Handcrafted in Morocco"
-                  price={p.price}
-                  compare={p.compare}
+                  price={p.base_price}
+                  compare={p.compare_at_price ?? undefined}
                 />
               </div>
             ))}
