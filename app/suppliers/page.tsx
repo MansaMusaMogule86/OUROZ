@@ -12,7 +12,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
-import Navbar from '@/components/Navbar';
 
 const PRODUCT_CATEGORIES = [
     'Spices & Seasonings',
@@ -94,9 +93,7 @@ export default function SupplierRegisterPage() {
     const labelClasses = "block text-[11px] font-medium text-[var(--color-charcoal)]/50 mb-2 uppercase tracking-wider";
 
     return (
-        <div className="min-h-screen bg-[var(--color-sahara)] relative overflow-hidden">
-            <Navbar />
-
+        <div className="relative overflow-hidden">
             {/* Faded Amazigh watermark — right side */}
             <div className="absolute top-1/2 -translate-y-1/2 -right-[15%] pointer-events-none select-none opacity-[0.05] z-0">
                 <span className="text-[40vw] font-serif leading-none block" style={{

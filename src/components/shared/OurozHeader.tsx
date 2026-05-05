@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import OurozMark from './OurozMark';
 
 const NAV_LINKS = [
   { href: '/shop', label: 'SHOP' },

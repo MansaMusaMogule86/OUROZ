@@ -50,8 +50,8 @@ function LoginForm() {
         <div className="w-full max-w-[400px]">
             <div className="text-center mb-8">
                 <Link href="/" className="inline-flex items-center gap-3 mb-6">
-                    <div className="w-8 h-8 bg-[#DD7117] rounded-full flex items-center justify-center">
-                        <span className="text-white text-[15px] font-serif leading-none translate-y-[-1px]">&#11581;</span>
+                    <div className="w-8 h-8 rounded-full border border-[var(--color-charcoal)]/15 flex items-center justify-center overflow-hidden bg-white">
+                        <img src="/logo/logo.png" alt="OUROZ" className="w-[82%] h-[82%] object-contain" draggable={false} />
                     </div>
                     <span className="text-[22px] font-heading font-bold uppercase tracking-[0.2em] text-[var(--color-charcoal)]">
                         OUROZ

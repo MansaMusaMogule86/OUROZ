@@ -77,114 +77,319 @@ const JOURNAL_POSTS: JournalPost[] = [
     },
 ];
 
+const CATEGORIES = ['All', 'Traditions', 'Recipes', 'Spice Guide', 'Heritage', 'Travel'];
+
+function fmtDate(date: string, opts: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric', year: 'numeric' }) {
+    return new Date(date).toLocaleDateString('en-US', opts);
+}
+
 export default function JournalPage() {
     const featuredPost = JOURNAL_POSTS[0];
     const restPosts = JOURNAL_POSTS.slice(1);
 
     return (
-        <div className="space-y-20">
-            {/* Hero */}
-            <section className="text-center pt-12">
-                <p className="text-[9px] font-medium uppercase tracking-[0.5em] text-[var(--color-gold)]/40 mb-5">
-                    الرحلة — The Journey
+        <div className="space-y-24 pb-12">
+            {/* ═══════════ HERO ═══════════ */}
+            <section className="relative text-center pt-16 pb-2">
+                <div className="flex items-center justify-center gap-4 mb-7">
+                    <span className="h-px w-10 bg-[var(--color-gold)]/30" />
+                    <span
+                        className="font-heading text-[var(--color-gold)]"
+                        style={{ fontSize: '1.75rem', fontWeight: 300, lineHeight: 1 }}
+                    >
+                        ⵣ
+                    </span>
+                    <span className="h-px w-10 bg-[var(--color-gold)]/30" />
+                </div>
+
+                <p
+                    className="font-body uppercase mb-6"
+                    style={{
+                        fontSize: '0.65rem',
+                        letterSpacing: '0.5em',
+                        color: 'rgba(201,168,76,0.85)',
+                        fontWeight: 600,
+                    }}
+                >
+                    الرحلة · The Journey
                 </p>
-                <h1 className="text-4xl md:text-6xl font-serif text-[var(--color-ink)]" style={{ fontWeight: 300, letterSpacing: '0.02em' }}>
-                    The Rihla Journal
+
+                <h1
+                    className="font-heading text-[var(--color-charcoal)] leading-[0.95] tracking-[-0.02em]"
+                    style={{ fontSize: 'clamp(3rem, 8vw, 6.5rem)', fontWeight: 400 }}
+                >
+                    The{' '}
+                    <em className="italic" style={{ fontWeight: 300, color: 'var(--color-imperial)' }}>
+                        Rihla
+                    </em>{' '}
+                    Journal
                 </h1>
-                <p className="text-sm text-[var(--color-charcoal)]/35 mt-5 max-w-md mx-auto leading-[1.8]" style={{ fontWeight: 300 }}>
-                    Stories, recipes, and traditions from the heart of Morocco.
+
+                <p
+                    className="font-body text-[var(--color-charcoal)]/55 mt-7 max-w-xl mx-auto leading-[1.85]"
+                    style={{ fontSize: '0.95rem', fontWeight: 300 }}
+                >
+                    Stories, recipes, and traditions from the heart of Morocco — chronicles
+                    of a journey through Amazigh culture, spice routes, and the quiet
+                    ceremonies of the everyday.
                 </p>
-                <div className="w-10 h-px bg-[var(--color-gold)]/20 mx-auto mt-8" />
+
+                <nav className="flex flex-wrap items-center justify-center gap-2 mt-10">
+                    {CATEGORIES.map((cat, i) => (
+                        <span
+                            key={cat}
+                            className={`font-body uppercase rounded-full px-4 py-2 transition-all duration-300 cursor-default ${
+                                i === 0
+                                    ? 'bg-[var(--color-charcoal)] text-[var(--color-sahara)]'
+                                    : 'border border-[var(--color-charcoal)]/12 text-[var(--color-charcoal)]/55 hover:border-[var(--color-charcoal)]/30 hover:text-[var(--color-charcoal)]'
+                            }`}
+                            style={{ fontSize: '0.625rem', letterSpacing: '0.22em', fontWeight: 600 }}
+                        >
+                            {cat}
+                        </span>
+                    ))}
+                </nav>
             </section>
 
-            {/* Featured post — editorial layout */}
-            <Link href={`/journal/${featuredPost.slug}`} className="block group">
-                <article className="grid grid-cols-1 md:grid-cols-2 gap-0 overflow-hidden border border-[var(--color-charcoal)]/[0.04] hover:border-[var(--color-charcoal)]/[0.08] transition-all duration-500">
-                    <div className="aspect-[16/10] md:aspect-auto relative overflow-hidden">
-                        <img
-                            src={featuredPost.image}
-                            alt={featuredPost.title}
-                            className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700"
-                        />
+            {/* ═══════════ FEATURED ═══════════ */}
+            <section>
+                <header className="flex items-end justify-between mb-8 border-b border-[var(--color-charcoal)]/10 pb-4">
+                    <div className="flex items-center gap-3">
+                        <span className="h-px w-6 bg-[var(--color-gold)]/60" />
+                        <p
+                            className="font-body uppercase text-[var(--color-gold)]"
+                            style={{ fontSize: '0.6rem', letterSpacing: '0.3em', fontWeight: 600 }}
+                        >
+                            Featured Story
+                        </p>
                     </div>
-                    <div className="flex flex-col justify-center p-8 md:p-12 bg-[var(--color-parchment)]">
-                        <div className="flex items-center gap-3 mb-5">
-                            <span className="text-[9px] font-medium uppercase tracking-[0.2em] text-[var(--color-imperial)]/60">
+                    <span
+                        className="font-body uppercase text-[var(--color-charcoal)]/30"
+                        style={{ fontSize: '0.6rem', letterSpacing: '0.25em' }}
+                    >
+                        Issue 01
+                    </span>
+                </header>
+
+                <Link href={`/journal/${featuredPost.slug}`} className="group block">
+                    <article
+                        className="grid grid-cols-1 md:grid-cols-12 gap-0 overflow-hidden rounded-2xl"
+                        style={{
+                            background: 'rgba(253,248,240,0.7)',
+                            backdropFilter: 'blur(10px)',
+                            border: '1px solid rgba(255,255,255,0.55)',
+                            boxShadow: '0 18px 50px -20px rgba(42,32,22,0.18)',
+                        }}
+                    >
+                        <div className="md:col-span-7 relative overflow-hidden aspect-[16/10] md:aspect-auto md:min-h-[460px]">
+                            <img
+                                src={featuredPost.image}
+                                alt={featuredPost.title}
+                                className="absolute inset-0 w-full h-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.05]"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-charcoal)]/30 via-transparent to-transparent" />
+                            <span
+                                className="absolute top-5 left-5 font-body uppercase rounded-full px-3.5 py-1.5"
+                                style={{
+                                    fontSize: '0.6rem',
+                                    letterSpacing: '0.25em',
+                                    fontWeight: 600,
+                                    background: 'rgba(253,248,240,0.92)',
+                                    color: 'var(--color-imperial)',
+                                    backdropFilter: 'blur(6px)',
+                                }}
+                            >
                                 {featuredPost.category}
                             </span>
-                            <span className="text-[9px] text-[var(--color-charcoal)]/20">
-                                {new Date(featuredPost.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                        </div>
+
+                        <div className="md:col-span-5 flex flex-col justify-center p-8 md:p-12 lg:p-14">
+                            <p
+                                className="font-body uppercase text-[var(--color-charcoal)]/40 mb-5"
+                                style={{ fontSize: '0.6rem', letterSpacing: '0.3em', fontWeight: 500 }}
+                            >
+                                {fmtDate(featuredPost.date)} · {featuredPost.readTime}
+                            </p>
+
+                            <h2
+                                className="font-heading text-[var(--color-charcoal)] mb-5 leading-[1.05] tracking-[-0.01em] transition-colors duration-500 group-hover:text-[var(--color-imperial)]"
+                                style={{ fontSize: 'clamp(1.65rem, 3vw, 2.5rem)', fontWeight: 400 }}
+                            >
+                                {featuredPost.title}
+                            </h2>
+
+                            <p
+                                className="font-body text-[var(--color-charcoal)]/60 leading-[1.85] mb-8"
+                                style={{ fontSize: '0.92rem', fontWeight: 300 }}
+                            >
+                                {featuredPost.excerpt}
+                            </p>
+
+                            <span
+                                className="inline-flex items-center gap-3 font-body uppercase text-[var(--color-charcoal)] group-hover:text-[var(--color-imperial)] transition-colors duration-400"
+                                style={{ fontSize: '0.65rem', letterSpacing: '0.3em', fontWeight: 600 }}
+                            >
+                                Read the Story
+                                <span
+                                    className="inline-block transition-transform duration-500 group-hover:translate-x-1.5"
+                                    aria-hidden
+                                >
+                                    →
+                                </span>
                             </span>
                         </div>
-                        <h2 className="text-2xl md:text-3xl font-serif text-[var(--color-ink)] mb-5 group-hover:text-[var(--color-imperial)] transition-colors duration-300" style={{ fontWeight: 300 }}>
-                            {featuredPost.title}
-                        </h2>
-                        <p className="text-sm text-[var(--color-charcoal)]/35 leading-[1.8] mb-6" style={{ fontWeight: 300 }}>
-                            {featuredPost.excerpt}
+                    </article>
+                </Link>
+            </section>
+
+            {/* ═══════════ ARCHIVE GRID ═══════════ */}
+            <section>
+                <header className="flex items-end justify-between mb-10 border-b border-[var(--color-charcoal)]/10 pb-4">
+                    <div className="flex items-center gap-3">
+                        <span className="h-px w-6 bg-[var(--color-gold)]/60" />
+                        <p
+                            className="font-body uppercase text-[var(--color-gold)]"
+                            style={{ fontSize: '0.6rem', letterSpacing: '0.3em', fontWeight: 600 }}
+                        >
+                            The Archive
                         </p>
-                        <span className="text-[9px] font-medium uppercase tracking-[0.25em] text-[var(--color-charcoal)]/30">
-                            {featuredPost.readTime}
-                        </span>
                     </div>
-                </article>
-            </Link>
+                    <span
+                        className="font-body uppercase text-[var(--color-charcoal)]/30"
+                        style={{ fontSize: '0.6rem', letterSpacing: '0.25em' }}
+                    >
+                        {restPosts.length} Stories
+                    </span>
+                </header>
 
-            {/* Posts grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                {restPosts.map(post => (
-                    <Link key={post.slug} href={`/journal/${post.slug}`} className="group block">
-                        <article>
-                            <div className="img-zoom mb-5">
-                                <img
-                                    src={post.image}
-                                    alt={post.title}
-                                    className="w-full h-[240px] md:h-[260px] object-cover"
-                                />
-                            </div>
-                            <div className="flex items-center gap-3 mb-3">
-                                <span className="text-[9px] font-medium uppercase tracking-[0.2em] text-[var(--color-imperial)]/50">
-                                    {post.category}
-                                </span>
-                            </div>
-                            <h3 className="text-lg font-serif text-[var(--color-charcoal)] mb-2 group-hover:text-[var(--color-imperial)] transition-colors duration-300" style={{ fontWeight: 400 }}>
-                                {post.title}
-                            </h3>
-                            <p className="text-xs text-[var(--color-charcoal)]/30 leading-relaxed mb-3 line-clamp-2" style={{ fontWeight: 300 }}>
-                                {post.excerpt}
-                            </p>
-                            <div className="flex items-center justify-between text-[9px] text-[var(--color-charcoal)]/20 uppercase tracking-wider">
-                                <span>
-                                    {new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                                </span>
-                                <span>{post.readTime}</span>
-                            </div>
-                        </article>
-                    </Link>
-                ))}
-            </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-14">
+                    {restPosts.map((post) => (
+                        <Link key={post.slug} href={`/journal/${post.slug}`} className="group block">
+                            <article>
+                                <div className="relative overflow-hidden rounded-xl mb-6 aspect-[4/5]">
+                                    <img
+                                        src={post.image}
+                                        alt={post.title}
+                                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.06]"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-charcoal)]/40 via-transparent to-transparent opacity-70" />
+                                    <span
+                                        className="absolute top-4 left-4 font-body uppercase rounded-full px-3 py-1"
+                                        style={{
+                                            fontSize: '0.55rem',
+                                            letterSpacing: '0.25em',
+                                            fontWeight: 600,
+                                            background: 'rgba(253,248,240,0.92)',
+                                            color: 'var(--color-imperial)',
+                                            backdropFilter: 'blur(6px)',
+                                        }}
+                                    >
+                                        {post.category}
+                                    </span>
+                                </div>
 
-            {/* Newsletter CTA */}
-            <section className="text-center py-12">
-                <div className="max-w-md mx-auto">
-                    <h3 className="text-xl font-serif text-[var(--color-ink)] mb-3" style={{ fontWeight: 300 }}>
-                        Stay on the journey
-                    </h3>
-                    <p className="text-xs text-[var(--color-charcoal)]/30 mb-6">
-                        Subscribe to The Rihla Journal for new stories, recipes, and exclusive offers.
-                    </p>
-                    <div className="flex gap-2">
-                        <input
-                            type="email"
-                            placeholder="your@email.com"
-                            className="flex-1 px-4 py-3.5 text-sm border border-[var(--color-charcoal)]/[0.08] bg-white
-                                       focus:outline-none focus:border-[var(--color-charcoal)]/20 transition-colors"
-                        />
-                        <button
-                            type="button"
-                            className="px-6 py-3.5 bg-[var(--color-ink)] text-[var(--color-sahara)] text-[10px] font-medium uppercase tracking-[0.2em] hover:bg-[var(--color-imperial)] transition-colors duration-500"
+                                <p
+                                    className="font-body uppercase text-[var(--color-charcoal)]/35 mb-3"
+                                    style={{ fontSize: '0.58rem', letterSpacing: '0.28em', fontWeight: 500 }}
+                                >
+                                    {fmtDate(post.date, { month: 'short', day: 'numeric', year: 'numeric' })} · {post.readTime}
+                                </p>
+
+                                <h3
+                                    className="font-heading text-[var(--color-charcoal)] leading-[1.15] tracking-[-0.01em] mb-3 transition-colors duration-400 group-hover:text-[var(--color-imperial)]"
+                                    style={{ fontSize: '1.4rem', fontWeight: 400 }}
+                                >
+                                    {post.title}
+                                </h3>
+
+                                <p
+                                    className="font-body text-[var(--color-charcoal)]/55 leading-[1.75] line-clamp-3 mb-5"
+                                    style={{ fontSize: '0.85rem', fontWeight: 300 }}
+                                >
+                                    {post.excerpt}
+                                </p>
+
+                                <span
+                                    className="inline-flex items-center gap-2 font-body uppercase text-[var(--color-charcoal)]/70 group-hover:text-[var(--color-imperial)] transition-colors duration-400"
+                                    style={{ fontSize: '0.6rem', letterSpacing: '0.3em', fontWeight: 600 }}
+                                >
+                                    Read
+                                    <span
+                                        className="inline-block transition-transform duration-500 group-hover:translate-x-1"
+                                        aria-hidden
+                                    >
+                                        →
+                                    </span>
+                                </span>
+                            </article>
+                        </Link>
+                    ))}
+                </div>
+            </section>
+
+            {/* ═══════════ NEWSLETTER ═══════════ */}
+            <section className="relative">
+                <div
+                    className="relative overflow-hidden rounded-2xl px-8 py-16 md:px-16 md:py-20 text-center"
+                    style={{
+                        background: 'linear-gradient(160deg, var(--color-ink) 0%, #1a1410 100%)',
+                        boxShadow: '0 30px 80px -30px rgba(42,32,22,0.45)',
+                    }}
+                >
+                    <div
+                        className="absolute -top-20 left-1/2 -translate-x-1/2 w-[420px] h-[420px] rounded-full opacity-20 pointer-events-none"
+                        style={{
+                            background:
+                                'radial-gradient(circle, rgba(212,175,55,0.55) 0%, transparent 60%)',
+                        }}
+                    />
+
+                    <div className="relative">
+                        <span
+                            className="font-heading text-[var(--color-gold)]/80"
+                            style={{ fontSize: '1.5rem', fontWeight: 300, lineHeight: 1 }}
+                        >
+                            ⵣ
+                        </span>
+
+                        <p
+                            className="font-body uppercase text-[var(--color-gold)]/80 mt-6 mb-4"
+                            style={{ fontSize: '0.6rem', letterSpacing: '0.45em', fontWeight: 600 }}
                         >
                             Subscribe
-                        </button>
+                        </p>
+
+                        <h3
+                            className="font-heading text-[var(--color-sahara)] mb-4 leading-[1.05] tracking-[-0.01em]"
+                            style={{ fontSize: 'clamp(1.75rem, 4vw, 2.75rem)', fontWeight: 400 }}
+                        >
+                            Stay on the journey
+                        </h3>
+
+                        <p
+                            className="font-body text-[var(--color-sahara)]/55 max-w-md mx-auto mb-10 leading-[1.85]"
+                            style={{ fontSize: '0.9rem', fontWeight: 300 }}
+                        >
+                            New stories, recipes, and limited harvests — delivered to your
+                            inbox. No noise, only the journal.
+                        </p>
+
+                        <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+                            <input
+                                type="email"
+                                required
+                                placeholder="your@email.com"
+                                className="flex-1 px-5 py-3.5 rounded-full bg-white/[0.06] text-[var(--color-sahara)] placeholder:text-[var(--color-sahara)]/30 border border-white/10 focus:outline-none focus:border-[var(--color-gold)]/60 transition-colors"
+                                style={{ fontSize: '0.85rem' }}
+                            />
+                            <button
+                                type="submit"
+                                className="px-7 py-3.5 rounded-full bg-[var(--color-gold)] text-[var(--color-ink)] font-body uppercase hover:bg-[var(--color-sahara)] transition-colors duration-400"
+                                style={{ fontSize: '0.65rem', letterSpacing: '0.3em', fontWeight: 700 }}
+                            >
+                                Subscribe
+                            </button>
+                        </form>
                     </div>
                 </div>
             </section>

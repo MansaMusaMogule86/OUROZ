@@ -137,28 +137,31 @@ export default async function HomePage() {
           ═══════════════════════════════════════════════════════════════ */}
       <section className="relative z-10 flex flex-col items-center justify-center min-h-[88vh] px-6 pt-8">
 
-        {/* ⵣ symbol in glowing circle */}
-        <div className="relative mb-6">
+        {/* ⵣ symbol in soft halo */}
+        <div className="relative mb-8 flex items-center justify-center">
+          {/* Outer warm halo glow */}
           <div
-            className="absolute -inset-6 rounded-full opacity-15 blur-xl pointer-events-none"
+            className="absolute -inset-20 rounded-full pointer-events-none"
             style={{
-              background: 'conic-gradient(from 0deg, transparent, #D4AF37, transparent 30%, transparent 100%)',
-              animation: 'spin-slow 10s linear infinite',
+              background:
+                'radial-gradient(circle at 50% 50%, rgba(212,175,55,0.22) 0%, rgba(212,175,55,0.10) 35%, rgba(253,248,240,0) 75%)',
+              filter: 'blur(14px)',
             }}
           />
+          {/* Inner soft cream halo — no hard disc */}
           <div
-            className="relative w-32 h-32 md:w-40 md:h-40 rounded-full flex items-center justify-center overflow-hidden"
+            className="relative w-72 h-72 md:w-[26rem] md:h-[26rem] rounded-full flex items-center justify-center"
             style={{
-              background: 'linear-gradient(160deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.45) 100%)',
-              boxShadow: '0 20px 60px -12px rgba(42,32,22,0.10)',
-              border: '1px solid rgba(255,255,255,0.6)',
+              background:
+                'radial-gradient(circle at 50% 45%, rgba(255,250,242,0.95) 0%, rgba(253,248,240,0.6) 50%, rgba(253,248,240,0) 78%)',
             }}
           >
             <img
               src="/logo/logo.png"
               alt="OUROZ"
-              className="w-[78%] h-[78%] object-contain select-none"
+              className="relative w-[78%] h-[78%] object-contain select-none"
               draggable={false}
+              style={{ filter: 'drop-shadow(0 8px 22px rgba(42,32,22,0.18))' }}
             />
           </div>
         </div>
@@ -184,16 +187,16 @@ export default async function HomePage() {
         </p>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 justify-center w-full max-w-xs">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <Link
             href="/shop"
-            className="flex-1 py-3.5 px-7 bg-[var(--color-charcoal)] text-[var(--color-sahara)] rounded-full text-center font-body font-bold text-[10px] uppercase tracking-[0.25em] hover:bg-[var(--color-charcoal)]/85 transition-all duration-400"
+            className="whitespace-nowrap py-4 px-10 bg-[var(--color-charcoal)] text-[var(--color-sahara)] rounded-full text-center font-body font-bold text-[11px] uppercase tracking-[0.22em] hover:bg-[var(--color-charcoal)]/85 transition-all duration-400"
           >
             Explore Products
           </Link>
           <Link
             href="/auth/login"
-            className="flex-1 py-3.5 px-7 border border-[var(--color-charcoal)]/20 text-[var(--color-charcoal)] rounded-full text-center font-body font-bold text-[10px] uppercase tracking-[0.25em] hover:bg-[var(--color-charcoal)] hover:text-[var(--color-sahara)] hover:border-[var(--color-charcoal)] transition-all duration-400"
+            className="whitespace-nowrap py-4 px-10 border border-[var(--color-charcoal)]/25 text-[var(--color-charcoal)] rounded-full text-center font-body font-bold text-[11px] uppercase tracking-[0.22em] hover:bg-[var(--color-charcoal)] hover:text-[var(--color-sahara)] hover:border-[var(--color-charcoal)] transition-all duration-400"
           >
             Supplier Login
           </Link>
@@ -224,16 +227,16 @@ export default async function HomePage() {
               >
                 Curated Moroccan provisions—spices, oils, teas, and artisan goods sourced directly from cooperatives and family producers across Morocco.
               </p>
-              <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <Link
                   href="/shop"
-                  className="flex-1 py-3 px-7 bg-[var(--color-charcoal)] text-[var(--color-sahara)] rounded-full text-center font-body font-bold text-[10px] uppercase tracking-[0.25em] hover:bg-[var(--color-charcoal)]/85 transition-all duration-400"
+                  className="whitespace-nowrap py-3.5 px-9 bg-[var(--color-charcoal)] text-[var(--color-sahara)] rounded-full text-center font-body font-bold text-[10px] uppercase tracking-[0.22em] hover:bg-[var(--color-charcoal)]/85 transition-all duration-400"
                 >
                   Explore Products
                 </Link>
                 <Link
                   href="/auth/login"
-                  className="flex-1 py-3 px-7 border border-[var(--color-charcoal)]/20 text-[var(--color-charcoal)] rounded-full text-center font-body font-bold text-[10px] uppercase tracking-[0.25em] hover:bg-[var(--color-charcoal)] hover:text-[var(--color-sahara)] transition-all duration-400"
+                  className="whitespace-nowrap py-3.5 px-9 border border-[var(--color-charcoal)]/25 text-[var(--color-charcoal)] rounded-full text-center font-body font-bold text-[10px] uppercase tracking-[0.22em] hover:bg-[var(--color-charcoal)] hover:text-[var(--color-sahara)] transition-all duration-400"
                 >
                   Supplier Login
                 </Link>
@@ -343,8 +346,8 @@ export default async function HomePage() {
             {/* Brand */}
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center">
-                  <span className="text-sm font-heading text-[var(--color-gold)]/50">&#11581;</span>
+                <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center overflow-hidden bg-white/[0.04]">
+                  <img src="/logo/logo.png" alt="OUROZ" className="w-[82%] h-[82%] object-contain" draggable={false} />
                 </div>
                 <span className="text-sm font-heading tracking-[0.3em] uppercase text-white/60" style={{ fontWeight: 400 }}>
                   OUROZ

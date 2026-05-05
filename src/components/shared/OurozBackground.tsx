@@ -99,19 +99,17 @@ export default function OurozBackground({
         </div>
       )}
 
-      {/* 4. Amazigh ⵣ watermark — right side, large, faded */}
+      {/* 4. OUROZ logo watermark — right side, large, faded */}
       {showWatermark && (
-        <div className="absolute right-[-40px] lg:right-[20px] top-[60px] z-[2] pointer-events-none select-none">
-          <span
-            className="text-[280px] lg:text-[380px] leading-none font-heading block opacity-[0.06]"
-            style={{
-              background: 'linear-gradient(180deg, #8B6B3A 0%, #C85A5A 30%, #5A8B3A 60%, #8B6B3A 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
-          >
-            &#11581;
-          </span>
+        <div className="absolute right-[-60px] lg:right-[-40px] top-[40px] z-[2] pointer-events-none select-none">
+          <img
+            src="/logo/logo.png"
+            alt=""
+            aria-hidden="true"
+            draggable={false}
+            className="w-[320px] lg:w-[460px] h-auto opacity-[0.10]"
+            style={{ filter: 'saturate(0.85)' }}
+          />
         </div>
       )}
 

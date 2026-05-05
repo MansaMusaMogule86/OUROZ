@@ -48,3 +48,5 @@ recent_files.json
 *.local
 
 ouroz-clone/
+.vercel
+.env*.local

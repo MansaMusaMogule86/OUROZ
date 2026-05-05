@@ -6,8 +6,8 @@ export default function Footer() {
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 sm:px-10 md:grid-cols-4">
         <div>
           <div className="mb-4 flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10">
-              <span className="font-heading text-sm text-[var(--color-gold)]/50">&#11581;</span>
+            <div className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 overflow-hidden bg-white/[0.04]">
+              <img src="/logo/logo.png" alt="OUROZ" className="w-[82%] h-[82%] object-contain" draggable={false} />
             </div>
             <span className="font-heading text-sm uppercase tracking-[0.3em] text-white/60">OUROZ</span>
           </div>

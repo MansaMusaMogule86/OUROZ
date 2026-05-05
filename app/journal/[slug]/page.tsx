@@ -127,51 +127,91 @@ export default async function JournalArticlePage({ params }: Props) {
 
     if (!article) notFound();
 
+    const formattedDate = new Date(article.date).toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+    });
+
     return (
-        <article className="max-w-3xl mx-auto">
+        <article className="max-w-3xl mx-auto pb-12">
             {/* Breadcrumb */}
-            <nav className="text-xs text-[var(--color-charcoal)]/30 mb-8">
-                <Link href="/journal" className="hover:text-[var(--color-imperial)] transition-colors">
+            <nav
+                className="font-body uppercase mb-12"
+                style={{ fontSize: '0.6rem', letterSpacing: '0.28em', fontWeight: 500 }}
+            >
+                <Link
+                    href="/journal"
+                    className="text-[var(--color-charcoal)]/40 hover:text-[var(--color-imperial)] transition-colors"
+                >
                     Journal
                 </Link>
-                <span className="mx-2">/</span>
-                <span className="text-[var(--color-charcoal)]/50">{article.category}</span>
+                <span className="mx-3 text-[var(--color-charcoal)]/20">/</span>
+                <span className="text-[var(--color-charcoal)]/65">{article.category}</span>
             </nav>
 
             {/* Header */}
-            <header className="mb-10">
-                <div className="flex items-center gap-3 mb-4">
-                    <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--color-imperial)] bg-[var(--color-imperial)]/10 px-3 py-1 rounded-full">
-                        {article.category}
+            <header className="text-center mb-12">
+                <div className="flex items-center justify-center gap-4 mb-7">
+                    <span className="h-px w-10 bg-[var(--color-gold)]/30" />
+                    <span
+                        className="font-heading text-[var(--color-gold)]"
+                        style={{ fontSize: '1.5rem', fontWeight: 300, lineHeight: 1 }}
+                    >
+                        ⵣ
                     </span>
-                    <span className="text-[10px] text-[var(--color-charcoal)]/30">
-                        {new Date(article.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                    </span>
-                    <span className="text-[10px] text-[var(--color-charcoal)]/30">
-                        {article.readTime}
-                    </span>
+                    <span className="h-px w-10 bg-[var(--color-gold)]/30" />
                 </div>
-                <h1 className="text-3xl md:text-5xl font-serif text-[var(--color-charcoal)] leading-tight mb-6" style={{ fontWeight: 300 }}>
+
+                <p
+                    className="font-body uppercase text-[var(--color-imperial)] mb-7"
+                    style={{ fontSize: '0.62rem', letterSpacing: '0.4em', fontWeight: 600 }}
+                >
+                    {article.category}
+                </p>
+
+                <h1
+                    className="font-heading text-[var(--color-charcoal)] leading-[1.05] tracking-[-0.015em] mb-8"
+                    style={{ fontSize: 'clamp(2.25rem, 5.5vw, 4rem)', fontWeight: 400 }}
+                >
                     {article.title}
                 </h1>
+
+                <div
+                    className="flex items-center justify-center gap-4 font-body uppercase text-[var(--color-charcoal)]/40"
+                    style={{ fontSize: '0.6rem', letterSpacing: '0.28em', fontWeight: 500 }}
+                >
+                    <span>{formattedDate}</span>
+                    <span className="h-1 w-1 rounded-full bg-[var(--color-gold)]/50" />
+                    <span>{article.readTime}</span>
+                </div>
             </header>
 
             {/* Hero image */}
-            <div className="aspect-[2/1] rounded-2xl overflow-hidden mb-12">
+            <div
+                className="aspect-[2/1] rounded-2xl overflow-hidden mb-14 relative"
+                style={{
+                    boxShadow: '0 24px 60px -25px rgba(42,32,22,0.25)',
+                    border: '1px solid rgba(255,255,255,0.55)',
+                }}
+            >
                 <img
                     src={article.image}
                     alt={article.title}
                     className="w-full h-full object-cover"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-charcoal)]/15 via-transparent to-transparent pointer-events-none" />
             </div>
 
-            {/* Content */}
-            <div className="space-y-6">
+            {/* Body */}
+            <div className="space-y-7">
                 {article.content.map((paragraph, i) => (
                     <p
                         key={i}
-                        className={`text-[var(--color-charcoal)]/60 leading-[1.9] ${
-                            i === 0 ? 'text-lg first-letter:text-4xl first-letter:font-serif first-letter:text-[var(--color-charcoal)] first-letter:float-left first-letter:mr-2 first-letter:mt-1' : 'text-base'
+                        className={`font-body text-[var(--color-charcoal)]/75 leading-[1.95] ${
+                            i === 0
+                                ? 'text-[1.1rem] first-letter:text-[4.5rem] first-letter:font-heading first-letter:font-normal first-letter:text-[var(--color-imperial)] first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:leading-[0.9]'
+                                : 'text-[1rem]'
                         }`}
                         style={{ fontWeight: 300 }}
                     >
@@ -180,23 +220,66 @@ export default async function JournalArticlePage({ params }: Props) {
                 ))}
             </div>
 
+            {/* Ornament divider */}
+            <div className="flex items-center justify-center gap-4 my-16">
+                <span className="h-px w-16 bg-[var(--color-gold)]/30" />
+                <span
+                    className="font-heading text-[var(--color-gold)]/70"
+                    style={{ fontSize: '1.25rem', fontWeight: 300, lineHeight: 1 }}
+                >
+                    ⵣ
+                </span>
+                <span className="h-px w-16 bg-[var(--color-gold)]/30" />
+            </div>
+
             {/* CTA */}
-            <div className="mt-16 p-8 bg-white/40 rounded-2xl border border-[var(--color-charcoal)]/[0.04] text-center">
-                <p className="text-sm text-[var(--color-charcoal)]/40 mb-4" style={{ fontWeight: 300 }}>
-                    Explore the products mentioned in this article
+            <div
+                className="relative overflow-hidden rounded-2xl px-8 py-12 md:px-12 text-center"
+                style={{
+                    background: 'rgba(253,248,240,0.7)',
+                    backdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(255,255,255,0.55)',
+                    boxShadow: '0 18px 50px -20px rgba(42,32,22,0.18)',
+                }}
+            >
+                <p
+                    className="font-body uppercase text-[var(--color-gold)] mb-4"
+                    style={{ fontSize: '0.6rem', letterSpacing: '0.4em', fontWeight: 600 }}
+                >
+                    From the Souk
+                </p>
+                <h3
+                    className="font-heading text-[var(--color-charcoal)] mb-4 leading-[1.15] tracking-[-0.01em]"
+                    style={{ fontSize: 'clamp(1.4rem, 3vw, 1.85rem)', fontWeight: 400 }}
+                >
+                    Bring this story home
+                </h3>
+                <p
+                    className="font-body text-[var(--color-charcoal)]/55 max-w-md mx-auto mb-8 leading-[1.85]"
+                    style={{ fontSize: '0.9rem', fontWeight: 300 }}
+                >
+                    Explore the products, spices, and ingredients featured in this article —
+                    sourced directly from Morocco.
                 </p>
                 <Link
                     href="/shop"
-                    className="inline-block px-8 py-3 bg-[var(--color-charcoal)] text-[var(--color-sahara)] rounded-full text-[10px] font-bold uppercase tracking-[0.25em] hover:bg-[var(--color-charcoal)]/90 transition-colors"
+                    className="inline-flex items-center gap-3 px-8 py-3.5 rounded-full bg-[var(--color-charcoal)] text-[var(--color-sahara)] font-body uppercase hover:bg-[var(--color-imperial)] transition-colors duration-500"
+                    style={{ fontSize: '0.65rem', letterSpacing: '0.3em', fontWeight: 700 }}
                 >
-                    Shop Now
+                    Shop the Story
+                    <span aria-hidden>→</span>
                 </Link>
             </div>
 
             {/* Back link */}
             <div className="mt-12 text-center">
-                <Link href="/journal" className="text-sm text-[var(--color-imperial)] hover:underline">
-                    &larr; Back to Journal
+                <Link
+                    href="/journal"
+                    className="inline-flex items-center gap-2 font-body uppercase text-[var(--color-charcoal)]/50 hover:text-[var(--color-imperial)] transition-colors"
+                    style={{ fontSize: '0.6rem', letterSpacing: '0.3em', fontWeight: 600 }}
+                >
+                    <span aria-hidden>←</span>
+                    Back to Journal
                 </Link>
             </div>
         </article>
